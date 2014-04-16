@@ -33,6 +33,10 @@ public class MCamera {
 		return true;
 	}
 	
+	public Camera getCamera() {
+		return mCamera;
+	}
+	
 	public void takePicture() {
 		mCamera.takePicture(null, mPicture, mPicture);
 	}
@@ -54,8 +58,7 @@ public class MCamera {
 			File pictureFile = getOutputMediaFile(FileColumns.MEDIA_TYPE_IMAGE);
 			if (pictureFile == null) {
 				Log.d(TAG,
-						"Error creating media file, check storage permissions: "
-								+ e.getMessage());
+						"Error creating media file, check storage permissions.");
 				return;
 			}
 
