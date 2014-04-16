@@ -38,7 +38,7 @@ public class MCamera {
 	}
 	
 	public void takePicture() {
-		mCamera.takePicture(null, mPicture, mPicture);
+		mCamera.takePicture(null, null, mPicture);
 	}
 
 	private boolean checkCameraHardware(Context context) {
@@ -64,6 +64,8 @@ public class MCamera {
 
 			try {
 				FileOutputStream fos = new FileOutputStream(pictureFile);
+				Log.d(TAG, "fos="+ fos);
+				Log.d(TAG, "data="+ data);
 				fos.write(data);
 				fos.close();
 			} catch (FileNotFoundException e) {
