@@ -12,6 +12,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.os.Build;
@@ -21,6 +23,12 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		/*
+		 * WindowManager.LayoutParams attrs = this.getWindow().getAttributes();
+		 * attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+		 * this.getWindow().setAttributes(attrs);
+		 */
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
 
 		if (savedInstanceState == null) {
@@ -48,18 +56,14 @@ public class MainActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-	}
 
 	/**
 	 * A placeholder fragment containing a simple view.
 	 */
 	public static class PlaceholderFragment extends Fragment {
-		
-		private mySurfaceView mPreview;
-		private MCamera mCamera;
+
+		private mySurfaceView mPreview = null;
+		private View rootView;
 
 		public PlaceholderFragment() {
 		}
@@ -67,33 +71,89 @@ public class MainActivity extends Activity {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container,
+			rootView = inflater.inflate(R.layout.fragment_main, container,
 					false);
-			
-			mCamera = new MCamera();
-			if (!mCamera.init(getActivity())) {
-				Log.e("onCreateView", "mCamera init failed (no camera?)");
-				//TODO: Show a message to user and quit?
-				return rootView;
-			}
-			
-			// Create our Preview view and set it as the content of our activity.
-			mPreview = new mySurfaceView(getActivity(), mCamera.getCamera());
-			FrameLayout preview = (FrameLayout) rootView.findViewById(R.id.camera_preview);
+			Log.d("toto", "ON CREATE VIEW");
+
+			// Create our Preview view and set it as the content of our
+			// activity.
+			mPreview = new mySurfaceView(getActivity());
+			FrameLayout preview = (FrameLayout) rootView
+					.findViewById(R.id.camera_preview);
 			preview.addView(mPreview);
-			Button captureButton = (Button) rootView.findViewById(R.id.button_capture);
-			captureButton.setOnClickListener(
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						// get an image from the camera
-						//mPreview.stopPreview();
-						mCamera.takePicture();
-						mPreview.startPreview();
-					}
+
+			Button captureButton = (Button) rootView
+					.findViewById(R.id.button_capture);
+			captureButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// get an image from the camera
+					// mPreview.stopPreview();
+					Log.d(ACCOUNT_SERVICE, "onClick");
+					mPreview.takePicture();
+					// mPreview.stopPreview();
+					 mPreview.startPreview();
 				}
-			);
+			});
+
+			// mPreview.startPreview();
+
 			return rootView;
+		}
+
+		@Override
+		public void onDestroyView() {
+			super.onDestroyView();
+			if (mPreview != null) {
+				Log.d("toto", "ONDESTROY VIEW");
+				mPreview.destroyPreview();
+				mPreview = null;
+				FrameLayout preview = (FrameLayout) rootView
+						.findViewById(R.id.camera_preview);
+				preview.removeView(mPreview);
+			}
+		}
+
+		@Override
+		public void onDestroy() { 
+			super.onDestroy();
+
+			if (mPreview != null) {
+				Log.d("toto", "ONDESTROY");
+				mPreview.destroyPreview();
+				mPreview = null;
+				FrameLayout preview = (FrameLayout) rootView
+						.findViewById(R.id.camera_preview);
+				preview.removeView(mPreview);
+			}
+			// mCamera = null;
+		}
+
+		@Override
+		public void onPause() {
+			super.onPause();
+			Log.d("toto", "ONPAUSE");
+			mPreview.destroyPreview();
+			mPreview = null;
+			FrameLayout preview = (FrameLayout) rootView
+					.findViewById(R.id.camera_preview);
+			preview.removeView(mPreview);
+			// mCamera = null;
+		}
+
+		@Override
+		public void onResume() {
+			Log.d("toto", "ON RESUME VIEW");
+			super.onResume();
+			if (mPreview != null) {
+				//mPreview.startPreview();
+				return;
+			}
+			mPreview = new mySurfaceView(getActivity());
+			FrameLayout preview = (FrameLayout) rootView
+					.findViewById(R.id.camera_preview);
+			preview.addView(mPreview);
+			 mPreview.startPreview();
 		}
 	}
 
