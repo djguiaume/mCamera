@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.content.res.Configuration;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -70,7 +71,11 @@ public class MainActivity extends Activity {
 					false);
 			
 			mCamera = new MCamera();
-			mCamera.init(getActivity());
+			if (!mCamera.init(getActivity())) {
+				Log.e("onCreateView", "mCamera init failed (no camera?)");
+				//TODO: Show a message to user and quit?
+				return rootView;
+			}
 			
 			// Create our Preview view and set it as the content of our activity.
 	        mPreview = new mySurfaceView(getActivity(), mCamera.getCamera());
