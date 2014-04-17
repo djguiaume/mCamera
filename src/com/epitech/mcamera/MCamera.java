@@ -19,13 +19,16 @@ import android.util.Log;
 
 public class MCamera {
 	private static String TAG = "mCamera";
-	private Camera mCamera;
+	private Camera mCamera = null;
 
 	public MCamera() {
 
 	}
 
 	public boolean init(Context context) {
+		Log.d(TAG, "init mPicture="+mPicture+"mCamera="+mCamera);
+		if (mCamera != null)
+			return false;
 		if (checkCameraHardware(context) == false)
 			return false;
 		mCamera = getCameraInstance();
@@ -35,12 +38,14 @@ public class MCamera {
 	}
 
 	public void destroy() {
+		Log.d(TAG, "destroy mPicture="+mPicture+"mCamera="+mCamera);
 		mCamera.stopPreview();
 		mCamera.release();
 		mCamera = null;
 	}
 
 	public Camera getCamera() {
+		Log.d(TAG, "getCamera mPicture="+mPicture+"mCamera="+mCamera);
 		return mCamera;
 	}
 
@@ -48,10 +53,12 @@ public class MCamera {
 
 		TakePictureTask takePictureTask = new TakePictureTask();
 		takePictureTask.execute();
+		Log.d(TAG, "takePicture mPicture="+mPicture+"mCamera="+mCamera);
+		//mCamera.takePicture(null, null, mPicture);
 	}
 
 	private boolean checkCameraHardware(Context context) {
-
+		Log.d(TAG, "CheckCameraHardware mPicture="+mPicture+"mCamera="+mCamera);
 		if (context.getPackageManager().hasSystemFeature(
 				PackageManager.FEATURE_CAMERA))
 			return true;
@@ -63,7 +70,7 @@ public class MCamera {
 
 		@Override
 		public void onPictureTaken(byte[] data, Camera camera) {
-
+			Log.d(TAG, "onPictureTaken mPicture="+mPicture+"mCamera="+mCamera);
 			File pictureFile = getOutputMediaFile(FileColumns.MEDIA_TYPE_IMAGE);
 			if (pictureFile == null) {
 				Log.d(TAG,
@@ -86,13 +93,15 @@ public class MCamera {
 	};
 
 	public static Camera getCameraInstance() {
+		
 		Camera c = null;
 		try {
 			c = Camera.open(); // attempt to get a Camera instance
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage());
 		}
-		return c; // returns null if camera is unavailable
+		Log.d(TAG, "getCameraInstance C="+c);
+		return c; // returns nu if camera is unavailable
 	}
 
 	private static Uri getOutputMediaFileUri(int type) {
