@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -14,6 +15,7 @@ import android.hardware.Camera.PictureCallback;
 import android.location.Location;
 import android.media.ExifInterface;
 import android.media.CamcorderProfile;
+import android.media.FaceDetector;
 import android.media.MediaRecorder;
 
 import android.os.AsyncTask;
@@ -29,6 +31,7 @@ public class MCamera {
     private Location location = null;
 	private MediaRecorder mMediaRecorder;
 	private boolean isRecording = false;
+    private InYourFaceDetection faces;
 
 	public MCamera() {
 
@@ -36,6 +39,10 @@ public class MCamera {
 
     public void setLocation(Location loc) {
         location = loc;
+    }
+
+    public Camera.Face[] getFaces() {
+        return faces.getFacist();
     }
 
 	public boolean init(Context context) {
@@ -46,6 +53,8 @@ public class MCamera {
 		if (checkCameraHardware(context) == false)
 			return false;
 		mCamera = getCameraInstance();
+        faces = new InYourFaceDetection();
+        mCamera.setFaceDetectionListener(faces);
 		if (mCamera == null)
 			return false;
 		return true;
@@ -196,7 +205,8 @@ public class MCamera {
 		}
 	};
 
-	private class TakePictureTask extends AsyncTask<Void, Void, Void> {
+    private class TakePictureTask extends AsyncTask<Void, Void, Void> {
+
 
 		@Override
 		protected void onPostExecute(Void result) {
@@ -214,6 +224,8 @@ public class MCamera {
 			return null;
 		}
 	}
+
+
 
 	private boolean prepareVideoRecorder(SurfaceHolder holder) {
 

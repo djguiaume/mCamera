@@ -3,21 +3,26 @@ package com.epitech.mcamera;
 import java.io.IOException;
 import java.util.List;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.*;
 import android.hardware.Camera;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 /** A basic Camera preview class */
 public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 	private static final String TAG = "SURFACE";
     public static final String VTAG = "VAYATAG";
-	private SurfaceHolder mHolder;
+    private SurfaceHolder mHolder;
 	private MCamera mCamera;
 	private Context mContext;
 	public static String ZOOM_FEATURE_NAME = "ZOOM";
@@ -30,7 +35,6 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		super(context);
 		mContext = context;
 
-
 		getHolder().addCallback(this);
 		Log.d(TAG, "surfaceView Constructor"); 
 		mCamera = new MCamera();
@@ -39,8 +43,9 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 			// TODO: Show a message to user and quit?
 		}
 	}
-	
-	@Override
+
+	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    @Override
 	public void surfaceCreated(SurfaceHolder holder) {
 		Log.w("surfaceCreated", "On Surface Created");
 		mHolder = holder;
@@ -72,7 +77,13 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
             Log.d(MySurfaceView.VTAG, "PASSIVE_PROVIDER");
         }
         else Log.d(MySurfaceView.VTAG, "No fuckin provider");
+
+        setWillNotDraw(false);
+        mCamera.getCamera().startFaceDetection();
+        Log.d(MySurfaceView.VTAG, "Face detection started");
     }
+
+
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
@@ -169,7 +180,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		return false;
 	}
 
-	public void takeVideo() {
+    public void takeVideo() {
 		if (mCamera.isRecording() == false)
 			mCamera.startVideoRecording(mHolder);
 		else
