@@ -1,13 +1,10 @@
 package com.epitech.mcamera;
 
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.hardware.Camera;
 import android.os.Bundle;
-import android.support.v4.widget.SearchViewCompat.OnCloseListenerCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,11 +12,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.os.Build;
 
 public class MainActivity extends Activity {
 
