@@ -119,14 +119,14 @@ public class MainActivity extends Activity {
 						.findViewById(R.id.button_zoom_plus);
 				Button zoomMinus = (Button) rootView
 						.findViewById(R.id.button_zoom_minus);
-				zoomMinus.setOnClickListener(new onZoomListerner());
-				zoomPlus.setOnClickListener(new onZoomListerner());
+				zoomMinus.setOnClickListener(new OnZoomButtonPushedListerner());
+				zoomPlus.setOnClickListener(new OnZoomButtonPushedListerner());
 				zoomMinus.setVisibility(View.VISIBLE);
 				zoomPlus.setVisibility(View.VISIBLE);
 			}
 		}
 
-		public class onZoomListerner implements OnClickListener {
+		public class OnZoomButtonPushedListerner implements OnClickListener {
 			@Override
 			public void onClick(View v) {
 				switch (v.getId()) {
@@ -138,36 +138,13 @@ public class MainActivity extends Activity {
 					break;
 				}
 			}
-
-		}
-
-		
-
-		@Override
-		public void onDestroy() {
-			super.onDestroy();
-		}
-
-		@Override
-		public void onPause() {
-			super.onPause();
-			Log.d(TAG, "ONPAUSE");
-			mPreview.destroyPreview();
-			mPreview = null;
-			FrameLayout preview = (FrameLayout) rootView
-					.findViewById(R.id.camera_preview);
-			preview.removeView(mPreview);
-			// mCamera = null;
 		}
 
 		@Override
 		public void onResume() {
 			Log.d(TAG, "ON RESUME VIEW");
 			super.onResume();
-			if (mPreview != null) {
-				// mPreview.startPreview();
-				return;
-			}
+			
 			mPreview = new MySurfaceView(getActivity());
 			FrameLayout preview = (FrameLayout) rootView
 					.findViewById(R.id.camera_preview);
@@ -183,6 +160,20 @@ public class MainActivity extends Activity {
 				
 			}
 		}
+
+		@Override
+		public void onPause() {
+			super.onPause();
+			Log.d(TAG, "ONPAUSE");
+		
+			FrameLayout preview = (FrameLayout) rootView
+					.findViewById(R.id.camera_preview);
+			preview.removeView(mPreview);
+			mPreview.destroyPreview();
+			mPreview = null;
+		}
+
+	
 	}
 
 }
