@@ -37,6 +37,22 @@
             android:layout_gravity="center"
             android:text="Zoom -"
             android:visibility="gone" />
+            <Button
+    android:id="@+id/button_photo"
+    android:text="photo"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    />
+  
+  <Button
+    android:id="@+id/button_video"
+    android:text="video"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    />
     </LinearLayout>
+
 
 </LinearLayout>

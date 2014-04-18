@@ -11,9 +11,13 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
-import android.media.CamcorderProfile;
-import android.media.MediaRecorder;
+import android.location.Location;
+import android.media.ExifInterface;
 import android.net.Uri;
+import android.media.CamcorderProfile;
+import android.media.CameraProfile;
+import android.media.MediaRecorder;
+
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore.Files.FileColumns;
@@ -24,11 +28,17 @@ public class MCamera {
 	private static String TAG = "MCamera";
 	private static String mSaveDir = "MyCameraApp";
 	private Camera mCamera = null;
+    private Location location = null;
 	private MediaRecorder mMediaRecorder;
+	private boolean isRecording = false;
 
 	public MCamera() {
 
 	}
+
+    public void setLocation(Location loc) {
+        location = loc;
+    }
 
 	public boolean init(Context context) {
 		if (mCamera != null) {
@@ -65,6 +75,36 @@ public class MCamera {
 		return mCamera;
 	}
 
+    private void SetExifGPSData(File fn) {
+        if (location == null)
+                return;
+        ExifInterface exif;
+        double glat = location.getLatitude();
+        double glong = location.getLongitude();
+
+        Log.d(MySurfaceView.VTAG, "setting exif data lat : " + glat + " long : "  + glong);
+
+        int num1Lat = (int)Math.floor(glat);
+        int num2Lat = (int)Math.floor((glat - num1Lat) * 60);
+        double num3Lat = (glat - ((double)num1Lat+((double)num2Lat/60))) * 3600000;
+
+        int num1Lon = (int)Math.floor(glong);
+        int num2Lon = (int)Math.floor((glong - num1Lon) * 60);
+        double num3Lon = (glong - ((double)num1Lon+((double)num2Lon/60))) * 3600000;
+
+        try {
+            exif = new ExifInterface(fn.getAbsolutePath());
+            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, num1Lat+"/1,"+num2Lat+"/1,"+num3Lat+"/1000");
+            exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, num1Lon+"/1,"+num2Lon+"/1,"+num3Lon+"/1000");
+            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, (glat > 0) ? "N" : "S");
+            exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, (glong > 0) ? "E" : "W");
+            exif.saveAttributes();
+        } catch (IOException e){
+            Log.d(MySurfaceView.VTAG, "Error set exif");
+        }
+
+    }
+
 	public static Camera getCameraInstance() {
 
 		Camera c = null;
@@ -78,7 +118,7 @@ public class MCamera {
 
 	private static File getOutputMediaFile(int type) throws Exception {
 
-		if (Environment.getExternalStorageState() != Environment.MEDIA_MOUNTED)
+		if (!(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())))
 			throw new Exception("SDCard not properly mounted.");
 
 		File mediaStorageDir = new File(
@@ -149,6 +189,7 @@ public class MCamera {
 				Log.d(TAG, "data=" + data);
 				fos.write(data);
 				fos.close();
+                SetExifGPSData(pictureFile);
 			} catch (FileNotFoundException e) {
 				Log.d(TAG, "File not found: " + e.getMessage());
 			} catch (IOException e) {
@@ -178,17 +219,17 @@ public class MCamera {
 
 	private boolean prepareVideoRecorder(SurfaceHolder holder) {
 
-		mCamera = getCameraInstance();
+		//mCamera = getCameraInstance();
+		Log.d("VIDEO", "mCamera =" + mCamera);
+		if (mCamera == null)
+			return false;
 		mMediaRecorder = new MediaRecorder();
-
 		mCamera.unlock();
 		mMediaRecorder.setCamera(mCamera);
 
 		mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
 		mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-
-		mMediaRecorder.setProfile(CamcorderProfile
-				.get(CamcorderProfile.QUALITY_HIGH));
+		mMediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
 
 		try {
 			mMediaRecorder.setOutputFile(getOutputMediaFile(
@@ -218,8 +259,18 @@ public class MCamera {
 	}
 
 	public boolean startVideoRecording(SurfaceHolder holder) {
-		if (prepareVideoRecorder(holder))
+		if (prepareVideoRecorder(holder)) {
+			try {
 			mMediaRecorder.start();
+			isRecording = true;
+			} catch (IllegalStateException e) {
+				Log.d(TAG,
+						"IllegalStateException starting MediaRecorder: "
+								+ e.getMessage());
+				releaseMediaRecorder();
+				return false;
+			}
+		}
 		else {
 			releaseMediaRecorder();
 			return false;
@@ -232,5 +283,10 @@ public class MCamera {
 		mMediaRecorder.stop();
 		releaseMediaRecorder();
 		mCamera.lock();
+		isRecording = false;
+	}
+	
+	public boolean isRecording() {
+		return isRecording;
 	}
 }
