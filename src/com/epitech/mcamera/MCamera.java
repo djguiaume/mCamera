@@ -34,7 +34,6 @@ public class MCamera {
 	private Location location = null;
 	private MediaRecorder mMediaRecorder;
 	private boolean isRecording = false;
-    public InYourFaceDetection faces;
 	private Context mContext = null;
 
 	public MCamera() {
@@ -45,10 +44,6 @@ public class MCamera {
 		location = loc;
 	}
 
-    public Camera.Face[] getFaces() {
-        return faces.getFacist();
-    }
-
 	public boolean init(Context context) {
 		mContext = context;
 		if (mCamera != null) {
@@ -58,9 +53,11 @@ public class MCamera {
 		if (checkCameraHardware(context) == false)
 			return false;
 		mCamera = getCameraInstance();
-        faces = new InYourFaceDetection();
 
-        mCamera.setFaceDetectionListener(faces);
+        mCamera.setFaceDetectionListener (new OverlayView(context));
+        mCamera.startFaceDetection();
+        Log.d(MySurfaceView.VTAG, "Face detection started");
+
 		if (mCamera == null)
 			return false;
 		return true;
@@ -96,7 +93,7 @@ public class MCamera {
 		double glong = location.getLongitude();
 
 		Log.d(MySurfaceView.VTAG, "setting exif data lat : " + glat
-				+ " long : " + glong);
+                + " long : " + glong);
 
 		int num1Lat = (int) Math.floor(glat);
 		int num2Lat = (int) Math.floor((glat - num1Lat) * 60);

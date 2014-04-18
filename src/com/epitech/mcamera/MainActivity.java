@@ -83,6 +83,7 @@ public class MainActivity extends Activity {
 					false);
 			Log.d(TAG, "ON CREATE VIEW");
 
+
 			// Create our Preview view and set it as the content of our
 			// activity.
 			

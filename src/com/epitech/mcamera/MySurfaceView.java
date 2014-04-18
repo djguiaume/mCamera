@@ -34,14 +34,15 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	public MySurfaceView(Context context) {
 		super(context);
 		mContext = context;
-
-		getHolder().addCallback(this);
+        getHolder().addCallback(this);
 		Log.d(TAG, "surfaceView Constructor"); 
 		mCamera = new MCamera();
 		if (!mCamera.init(context)) {
 			Log.e("onCreateView", "mCamera init failed (no camera?)");
 			// TODO: Show a message to user and quit?
 		}
+
+
 	}
 
 	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -78,13 +79,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
         }
         else Log.d(MySurfaceView.VTAG, "No fuckin provider");
 
-        OverlayView ov =  (OverlayView) findViewById(R.id.overlay);
-        if (ov != null) {
-            ov.setFaces(mCamera.getFaces());
-            mCamera.faces.setView(ov);
-        }
-        mCamera.getCamera().startFaceDetection();
-        Log.d(MySurfaceView.VTAG, "Face detection started");
+
+
     }
 
 
@@ -134,6 +130,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		} catch (Exception e) {
 			Log.d(TAG, "Error starting camera preview: " + e.getMessage());
 		}
+
+
 	}
 
 	public void startPreview() {
