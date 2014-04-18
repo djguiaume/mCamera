@@ -3,20 +3,18 @@ package com.epitech.mcamera;
 import java.io.IOException;
 
 import android.content.Context;
-import android.hardware.Camera;
-import android.hardware.Camera.Size;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 /** A basic Camera preview class */
-public class mySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
+public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 	private static final String TAG = "SURFACE";
 	private SurfaceHolder mHolder;
 	private MCamera mCamera;
 	private Context mContext;
 
-	public mySurfaceView(Context context) {
+	public MySurfaceView(Context context) {
 		super(context);
 		mContext = context;
 		getHolder().addCallback(this);
@@ -28,12 +26,14 @@ public class mySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		}
 	}
 	
+	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
 		Log.w("surfaceCreated", "On Surface Created");
 		mHolder = holder;
 		startPreview();
 	}
 
+	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		// empty. Take care of releasing the Camera preview in your activity.
 		Log.d(TAG, "surfaceDestroy");
@@ -41,6 +41,7 @@ public class mySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		//mCamera = null;
 	}
 
+	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
 		Log.d(TAG, "surfaceCHANGED");
 		if (holder.getSurface() == null) {
