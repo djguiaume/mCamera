@@ -15,10 +15,10 @@
       
           <SwitchPreference
         android:key="switch_size"
-        android:title="Size"
-        android:switchTextOff = "Little"
-        android:switchTextOn = "Big"
-        android:defaultValue="false" />
+        android:title="Quality"
+        android:switchTextOff = "LOW"
+        android:switchTextOn = "HIGH"
+        android:defaultValue="true" />
           
     </PreferenceCategory>
 

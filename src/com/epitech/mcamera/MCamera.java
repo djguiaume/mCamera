@@ -19,7 +19,6 @@ import android.location.Location;
 import android.media.ExifInterface;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -35,7 +34,7 @@ public class MCamera {
 	private Camera mCamera = null;
 	private Location location = null;
 	private MediaRecorder mMediaRecorder;
-	private boolean isRecording = false;
+	private boolean mIsRecording = false;
 	private Context mContext = null;
 	private OnSharedPreferenceChangeListener listener = null;
 	private SharedPreferences prefs = null;
@@ -66,12 +65,12 @@ public class MCamera {
 		mCamera = getCameraInstance();
 		if (mCamera == null)
 			return false;
-		setTorcheLight();
 		return true;
 	}
 
 	public void destroy() {
 		Log.d(TAG, "destroy called.");
+		stopVideoRecording(); 
 		mCamera.stopPreview();
 		mCamera.release();
 		mCamera = null;
@@ -183,7 +182,6 @@ public class MCamera {
 	}
 
 	public void takePicture() {
-		
 		TakePictureTask takePictureTask = new TakePictureTask();
 		takePictureTask.execute();
 	}
@@ -219,7 +217,7 @@ public class MCamera {
 			} catch (IOException e) {
 				Log.d(TAG, "Error accessing file: " + e.getMessage());
 			}
-			
+
 			ContentValues image = new ContentValues();
 
 			image.put(Images.Media.TITLE, pictureFile.getName());
@@ -264,20 +262,56 @@ public class MCamera {
 		}
 	}
 
+	private class TakeVideoTask extends AsyncTask<SurfaceHolder, Void, Boolean> {
+
+		@Override
+		protected void onPostExecute(Boolean recording) {
+			if (recording)
+				return;
+			releaseMediaRecorder();
+			mIsRecording = false;
+		}
+
+		@Override
+		protected Boolean doInBackground(SurfaceHolder... holder) {
+			if (prepareVideoRecorder(holder[0])) {
+				try {
+					mMediaRecorder.start();
+					mIsRecording = true;
+				} catch (IllegalStateException e) {
+					Log.d(TAG, "IllegalStateException starting MediaRecorder: "
+							+ e.getMessage());
+					return false;
+				}
+			} else
+				return false;
+			return true;
+		}
+	}
+
 	private boolean prepareVideoRecorder(SurfaceHolder holder) {
 
 		// mCamera = getCameraInstance();
 		Log.d("VIDEO", "mCamera =" + mCamera);
 		if (mCamera == null)
 			return false;
+		int quality = CamcorderProfile.QUALITY_HIGH;
 		mMediaRecorder = new MediaRecorder();
 		mCamera.unlock();
 		mMediaRecorder.setCamera(mCamera);
 
 		mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
 		mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-		mMediaRecorder.setProfile(CamcorderProfile
-				.get(CamcorderProfile.QUALITY_HIGH));
+
+		SharedPreferences sharedPref = PreferenceManager
+				.getDefaultSharedPreferences(mContext);
+		boolean format = sharedPref.getBoolean("switch_size", true);
+		Log.e("FORMAT", "format = " + format);
+
+		if (format == false)
+			quality = CamcorderProfile.QUALITY_LOW;
+
+		mMediaRecorder.setProfile(CamcorderProfile.get(quality));
 
 		try {
 			mMediaRecorder.setOutputFile(getOutputMediaFile(
@@ -307,50 +341,29 @@ public class MCamera {
 	}
 
 	public boolean startVideoRecording(SurfaceHolder holder) {
-		if (prepareVideoRecorder(holder)) {
-			try {
-				mMediaRecorder.start();
-				isRecording = true;
-			} catch (IllegalStateException e) {
-				Log.d(TAG,
-						"IllegalStateException starting MediaRecorder: "
-								+ e.getMessage());
-				releaseMediaRecorder();
-				return false;
-			}
-		} else {
-			releaseMediaRecorder();
-			return false;
+		if (mIsRecording) {
+			Log.w(TAG, "Video already recording!");
+			return true;
 		}
-		return true;
-
+		new TakeVideoTask().execute(holder);
+		return mIsRecording;
 	}
 
-	public void stoptVideoRecording() {
+	public void stopVideoRecording() {
+		if (!mIsRecording)
+			return;
 		mMediaRecorder.stop();
 		releaseMediaRecorder();
 		mCamera.lock();
-		isRecording = false;
+		mIsRecording = false;
 	}
 
 	public boolean isRecording() {
-		return isRecording;
+		return mIsRecording;
 	}
-	
-	public void setTorcheLight(){
-		if (mCamera != null){
-			Parameters p = mCamera.getParameters();
-			if (prefs.getBoolean("flash_switch", true)){
-				p.setFlashMode(Parameters.FLASH_MODE_ON);
-				mCamera.setParameters(p);
-			}
-			else{ 
-				p.setFlashMode(Parameters.FLASH_MODE_OFF);
-				mCamera.setParameters(p);
-			}
-		}
-		else
-		Log.d(TAG, "mCamera pas la ");
+
+	public void torcheLight() {
+		mCamera.getParameters().setFlashMode(Parameters.FLASH_MODE_ON);
 	}
 	
 	public void UpdatePref(Context context) {

@@ -113,6 +113,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		Log.d(TAG, "mHolder = "+mHolder+" holder = "+holder);
 		mHolder = holder;
 		try {
+			
+			
 			mCamera.getCamera().getParameters().setPreviewSize(w, h);
 			mCamera.getCamera().getParameters().setPreviewFormat(format);
 			mCamera.getCamera().setPreviewDisplay(mHolder);
@@ -144,6 +146,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	public void destroyPreview() {
 		Log.d(TAG, "DESTROY PREVIEW mCamera=" + mCamera);
 		mCamera.getCamera().setPreviewCallback(null);
+		this.getHolder().removeCallback(this);
 		mCamera.destroy();
 	}
 	
@@ -172,11 +175,11 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		return false;
 	}
 
-	public void takeVideo() {
+	public void takeVideo() { 
 		if (mCamera.isRecording() == false)
 			mCamera.startVideoRecording(mHolder);
 		else
-			mCamera.stoptVideoRecording();
+			mCamera.stopVideoRecording();
 	}
 
 	public Camera getCamera() {
