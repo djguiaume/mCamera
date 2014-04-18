@@ -37,8 +37,8 @@ public class MCamera {
 	private MediaRecorder mMediaRecorder;
 	private boolean isRecording = false;
 	private Context mContext = null;
-	/*private OnSharedPreferenceChangeListener listener = null;
-	private SharedPreferences prefs = null;*/
+	private OnSharedPreferenceChangeListener listener = null;
+	private SharedPreferences prefs = null;
 	public MCamera() {
 
 	}
@@ -50,13 +50,13 @@ public class MCamera {
 	public boolean init(Context context) {
 		
 			mContext = context;
-			/*prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.);
+			prefs = PreferenceManager.getDefaultSharedPreferences(context);
 			listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
 				public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-					UpdatePref();
+					UpdatePref(mContext);
 				}
 			};
-			prefs.registerOnSharedPreferenceChangeListener(listener);	*/
+			prefs.registerOnSharedPreferenceChangeListener(listener);
 		if (mCamera != null) {
 			Log.d(TAG, "already init.");
 			return false;
@@ -66,6 +66,7 @@ public class MCamera {
 		mCamera = getCameraInstance();
 		if (mCamera == null)
 			return false;
+		setTorcheLight();
 		return true;
 	}
 
@@ -182,6 +183,7 @@ public class MCamera {
 	}
 
 	public void takePicture() {
+		
 		TakePictureTask takePictureTask = new TakePictureTask();
 		takePictureTask.execute();
 	}
@@ -335,7 +337,26 @@ public class MCamera {
 		return isRecording;
 	}
 	
-	public void torcheLight(){
-		mCamera.getParameters().setFlashMode(Parameters.FLASH_MODE_ON);
+	public void setTorcheLight(){
+		if (mCamera != null){
+			Parameters p = mCamera.getParameters();
+			if (prefs.getBoolean("flash_switch", true)){
+				p.setFlashMode(Parameters.FLASH_MODE_ON);
+				mCamera.setParameters(p);
+			}
+			else{ 
+				p.setFlashMode(Parameters.FLASH_MODE_OFF);
+				mCamera.setParameters(p);
+			}
+		}
+		else
+		Log.d(TAG, "mCamera pas la ");
+	}
+	
+	public void UpdatePref(Context context) {
+		//get latest settings from the xml config file
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+		
+		
 	}
 }
