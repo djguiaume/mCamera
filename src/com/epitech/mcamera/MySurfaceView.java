@@ -152,7 +152,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	
 	public boolean hasFeature(String featureName) {
 		
-		Camera cam = MCamera.getCameraInstance();
+		Camera cam = mCamera.getCamera();
 		
 		if (cam != null) {
 			Camera.Parameters params = cam.getParameters();
@@ -165,6 +165,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 			if (focusModes.contains(featureName)) {
 				return true;
 			}
+		} else {
+			Log.e(TAG, "Try to call has feature: " +  featureName + " whan cam == null !!");
 		}
 		return false;
 	}

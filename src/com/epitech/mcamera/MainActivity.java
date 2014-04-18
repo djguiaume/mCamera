@@ -102,9 +102,7 @@ public class MainActivity extends Activity {
 			});
 
 
-			if (mPreview.hasFeature(MySurfaceView.ZOOM_FEATURE_NAME)) {
-				setFeatureControls(MySurfaceView.ZOOM_FEATURE_NAME, rootView);
-			}
+	
 
 			Button videoButton = (Button) rootView
 					.findViewById(R.id.button_video);
@@ -202,6 +200,15 @@ public class MainActivity extends Activity {
 					.findViewById(R.id.camera_preview);
 			preview.addView(mPreview);
 			mPreview.startPreview();
+			
+			Log.v(TAG, "Checks feature");
+			if (mPreview.hasFeature(MySurfaceView.ZOOM_FEATURE_NAME)) {
+				Log.v(TAG, "On a la feature");
+				setFeatureControls(MySurfaceView.ZOOM_FEATURE_NAME, rootView);
+			} else {
+				Log.v(TAG, "On a pas la feature");
+				
+			}
 		}
 	}
 
