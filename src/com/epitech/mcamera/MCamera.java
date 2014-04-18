@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.media.CamcorderProfile;
+import android.media.CameraProfile;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -78,7 +79,7 @@ public class MCamera {
 
 	private static File getOutputMediaFile(int type) throws Exception {
 
-		if (Environment.getExternalStorageState() != Environment.MEDIA_MOUNTED)
+		if (!(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())))
 			throw new Exception("SDCard not properly mounted.");
 
 		File mediaStorageDir = new File(
@@ -178,17 +179,17 @@ public class MCamera {
 
 	private boolean prepareVideoRecorder(SurfaceHolder holder) {
 
-		mCamera = getCameraInstance();
+		//mCamera = getCameraInstance();
+		Log.d("VIDEO", "mCamera =" + mCamera);
+		if (mCamera == null)
+			return false;
 		mMediaRecorder = new MediaRecorder();
-
 		mCamera.unlock();
 		mMediaRecorder.setCamera(mCamera);
 
 		mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
 		mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-
-		mMediaRecorder.setProfile(CamcorderProfile
-				.get(CamcorderProfile.QUALITY_HIGH));
+		mMediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
 
 		try {
 			mMediaRecorder.setOutputFile(getOutputMediaFile(
@@ -219,8 +220,16 @@ public class MCamera {
 
 	public boolean startVideoRecording(SurfaceHolder holder) {
 		if (prepareVideoRecorder(holder)) {
+			try {
 			mMediaRecorder.start();
 			isRecording = true;
+			} catch (IllegalStateException e) {
+				Log.d(TAG,
+						"IllegalStateException starting MediaRecorder: "
+								+ e.getMessage());
+				releaseMediaRecorder();
+				return false;
+			}
 		}
 		else {
 			releaseMediaRecorder();

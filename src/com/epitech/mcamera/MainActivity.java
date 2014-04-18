@@ -93,19 +93,27 @@ public class MainActivity extends Activity {
 					.findViewById(R.id.camera_preview);
 			preview.addView(mPreview);
 
-			Button captureButton = (Button) rootView
-					.findViewById(R.id.button_capture);
-			captureButton.setOnClickListener(new View.OnClickListener() {
+			Button photoButton = (Button) rootView
+					.findViewById(R.id.button_photo);
+			photoButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					// get an image from the camera
-					// mPreview.stopPreview();
 					Log.d(ACCOUNT_SERVICE, "onClick");
 					mPreview.takePicture();
-					// mPreview.stopPreview();
 				}
 			});
-
+			
+			Button videoButton = (Button) rootView
+					.findViewById(R.id.button_video);
+			videoButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// get an image from the camera
+					Log.d(ACCOUNT_SERVICE, "onClick VIDEO");
+					mPreview.takeVideo();
+				}
+			});
 			// mPreview.startPreview();
 
 			return rootView;
