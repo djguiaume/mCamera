@@ -37,8 +37,11 @@ public class MCamera {
 	private MediaRecorder mMediaRecorder;
 	private boolean isRecording = false;
 	private Context mContext = null;
-	/*private OnSharedPreferenceChangeListener listener = null;
-	private SharedPreferences prefs = null;*/
+
+	/*
+	 * private OnSharedPreferenceChangeListener listener = null; private
+	 * SharedPreferences prefs = null;
+	 */
 	public MCamera() {
 
 	}
@@ -48,15 +51,15 @@ public class MCamera {
 	}
 
 	public boolean init(Context context) {
-		
-			mContext = context;
-			/*prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.);
-			listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-				public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-					UpdatePref();
-				}
-			};
-			prefs.registerOnSharedPreferenceChangeListener(listener);	*/
+
+		mContext = context;
+		/*
+		 * prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.);
+		 * listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+		 * public void onSharedPreferenceChanged(SharedPreferences prefs, String
+		 * key) { UpdatePref(); } };
+		 * prefs.registerOnSharedPreferenceChangeListener(listener);
+		 */
 		if (mCamera != null) {
 			Log.d(TAG, "already init.");
 			return false;
@@ -217,7 +220,7 @@ public class MCamera {
 			} catch (IOException e) {
 				Log.d(TAG, "Error accessing file: " + e.getMessage());
 			}
-			
+
 			ContentValues image = new ContentValues();
 
 			image.put(Images.Media.TITLE, pictureFile.getName());
@@ -268,14 +271,23 @@ public class MCamera {
 		Log.d("VIDEO", "mCamera =" + mCamera);
 		if (mCamera == null)
 			return false;
+		int quality = CamcorderProfile.QUALITY_HIGH;
 		mMediaRecorder = new MediaRecorder();
 		mCamera.unlock();
 		mMediaRecorder.setCamera(mCamera);
 
 		mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
 		mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-		mMediaRecorder.setProfile(CamcorderProfile
-				.get(CamcorderProfile.QUALITY_HIGH));
+
+		SharedPreferences sharedPref = PreferenceManager
+				.getDefaultSharedPreferences(mContext);
+		boolean format = sharedPref.getBoolean("switch_size", true);
+		Log.e("FORMAT", "format = " + format);
+
+		if (format == false)
+			quality = CamcorderProfile.QUALITY_LOW;
+
+		mMediaRecorder.setProfile(CamcorderProfile.get(quality));
 
 		try {
 			mMediaRecorder.setOutputFile(getOutputMediaFile(
@@ -334,8 +346,8 @@ public class MCamera {
 	public boolean isRecording() {
 		return isRecording;
 	}
-	
-	public void torcheLight(){
+
+	public void torcheLight() {
 		mCamera.getParameters().setFlashMode(Parameters.FLASH_MODE_ON);
 	}
 }
