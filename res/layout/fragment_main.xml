@@ -1,19 +1,23 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:baselineAligned="false"
     android:orientation="horizontal" >
 
     <FrameLayout
         android:id="@+id/camera_preview"
-        android:layout_width="0dp"
+        android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1" />
+        android:layout_alignParentLeft="true"/>
 
     <LinearLayout
+        android:id="@+id/camera_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
-        android:orientation="vertical" >
+        android:layout_alignParentRight="true"
+        android:orientation="vertical" 
+        android:background="#80000000" >
 
         <Button
             android:id="@+id/button_zoom_plus"
@@ -37,22 +41,20 @@
             android:layout_gravity="center"
             android:text="Zoom -"
             android:visibility="gone" />
-            <Button
-    android:id="@+id/button_photo"
-    android:text="photo"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    />
-  
-  <Button
-    android:id="@+id/button_video"
-    android:text="video"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    />
+
+        <Button
+            android:id="@+id/button_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="photo" />
+
+        <Button
+            android:id="@+id/button_video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="video" />
     </LinearLayout>
 
-
-</LinearLayout>
+</RelativeLayout>
