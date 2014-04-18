@@ -73,7 +73,7 @@ public class MCamera {
 
 	public void destroy() {
 		Log.d(TAG, "destroy called.");
-		stoptVideoRecording();
+		stopVideoRecording(); 
 		mCamera.stopPreview();
 		mCamera.release();
 		mCamera = null;
@@ -290,6 +290,7 @@ public class MCamera {
 				return false;
 			return true;
 		}
+	}
 
 	private boolean prepareVideoRecorder(SurfaceHolder holder) {
 
@@ -351,7 +352,7 @@ public class MCamera {
 		return mIsRecording;
 	}
 
-	public void stoptVideoRecording() {
+	public void stopVideoRecording() {
 		if (!mIsRecording)
 			return;
 		mMediaRecorder.stop();

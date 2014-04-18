@@ -22,6 +22,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.hardware.Camera;
+import com.epitech.mcamera.ZoomPlugin;
 
 public class MainActivity extends Activity {
 	

@@ -175,11 +175,11 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		return false;
 	}
 
-	public void takeVideo() {
+	public void takeVideo() { 
 		if (mCamera.isRecording() == false)
 			mCamera.startVideoRecording(mHolder);
 		else
-			mCamera.stoptVideoRecording();
+			mCamera.stopVideoRecording();
 	}
 
 	public Camera getCamera() {
