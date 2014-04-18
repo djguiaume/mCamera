@@ -1,47 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
+    <PreferenceCategory android:title="Video" >
 
-    <PreferenceCategory
-            android:title="Format and Size">
+        <!-- <ListPreference -->
+        <!-- android:defaultValue="1" -->
+        <!-- android:entries="@array/type_format" -->
+        <!-- android:entryValues="@array/type_format_value" -->
+        <!-- android:key="set_format" -->
+        <!-- android:summary="Choose your sound encoder" -->
+        <!-- android:title="File format" /> -->
 
-        <ListPreference
-            android:defaultValue="1"
-            android:entries="@array/type_format"
-            android:entryValues="@array/type_format_value"
-            android:key="set_format"
-            android:summary="Choose your file format"
-            android:title="File format" />
-      
-          <SwitchPreference
-        android:key="switch_size"
-        android:title="Quality"
-        android:switchTextOff = "LOW"
-        android:switchTextOn = "HIGH"
-        android:defaultValue="true" />
-          
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="switch_size"
+            android:switchTextOff="LOW"
+            android:switchTextOn="HIGH"
+            android:title="Quality" />
     </PreferenceCategory>
-
-    <PreferenceCategory
-            android:title="Preferences">
-
-       <SwitchPreference
-        android:key="gps_switch"
-        android:title="Geottaging"
-        android:defaultValue="false" />
-       
+    <PreferenceCategory android:title="Photo" >
         <SwitchPreference
-        android:key="flash_switch"
-        android:title="Flash"
-        android:defaultValue="false" />
-        
+            android:defaultValue="false"
+            android:key="gps_switch"
+            android:title="Geottaging" />
         <SwitchPreference
-        android:key="face_switch"
-        android:title="Face detection"
-        android:defaultValue="false" />
-        
-        
-       
+            android:defaultValue="false"
+            android:key="flash_switch"
+            android:title="Flash" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="face_switch"
+            android:title="Face detection" />
     </PreferenceCategory>
 
 </PreferenceScreen>

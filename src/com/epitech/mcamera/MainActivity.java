@@ -24,13 +24,15 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
+
 import com.epitech.mcamera.ZoomPlugin;
 
 public class MainActivity extends Activity {
-	
+
 	private OnSharedPreferenceChangeListener listener = null;
 	private SharedPreferences prefs = null;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -41,18 +43,18 @@ public class MainActivity extends Activity {
 		 */
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
-		
+
 		UpdatePref();
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-			public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+			public void onSharedPreferenceChanged(SharedPreferences prefs,
+					String key) {
 				UpdatePref();
 			}
 		};
-		prefs.registerOnSharedPreferenceChangeListener(listener);		
-	
+		prefs.registerOnSharedPreferenceChangeListener(listener);
 
-        if (savedInstanceState == null) {
+		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
 		}
@@ -95,7 +97,7 @@ public class MainActivity extends Activity {
 		private MySurfaceView mPreview = null;
 		private View rootView;
 		private static String TAG = "PlaceholderFragment";
-		
+
 		Camera camera;
 		List<plugin> plugins;
 
@@ -134,6 +136,26 @@ public class MainActivity extends Activity {
 					mPreview.takeVideo();
 				}
 			});
+			
+			Button aeButton = (Button) rootView
+					.findViewById(R.id.button_ae);
+			aeButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Button aeButton = (Button) v.findViewById(R.id.button_ae);
+					// get an image from the camera
+					Log.d(ACCOUNT_SERVICE, "onClick");
+					Parameters p = mPreview.getCamera().getParameters();
+					if (aeButton.getText() == "AE off") {
+						aeButton.setText("AE on");
+						p.setAutoExposureLock(true);
+					} else {
+						aeButton.setText("AE off");
+						p.setAutoExposureLock(false);
+					}
+					mPreview.getCamera().setParameters(p);
+				}
+			});
 			return rootView;
 		}
 
@@ -142,7 +164,8 @@ public class MainActivity extends Activity {
 			Log.d(TAG, "ON RESUME VIEW");
 			super.onResume();
 
-			mPreview = new MySurfaceView(getActivity(), (RelativeLayout) rootView.findViewById(R.id.relavmain));
+			mPreview = new MySurfaceView(getActivity(),
+					(RelativeLayout) rootView.findViewById(R.id.relavmain));
 
 			FrameLayout preview = (FrameLayout) rootView
 					.findViewById(R.id.camera_preview);
@@ -151,15 +174,12 @@ public class MainActivity extends Activity {
 
 			plugins = new ArrayList<MainActivity.PlaceholderFragment.plugin>();
 			plugins.add(new ZoomPlugin());
-			
+
 			for (int i = 0; i < plugins.size(); ++i) {
 				plugins.get(i).askFeature(mPreview, rootView);
 			}
-			
-			
 
 		}
-
 
 		@Override
 		public void onPause() {
@@ -180,9 +200,11 @@ public class MainActivity extends Activity {
 		}
 
 	}
+
 	public void UpdatePref() {
-		//get latest settings from the xml config file
-		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		
+		// get latest settings from the xml config file
+		SharedPreferences sharedPref = PreferenceManager
+				.getDefaultSharedPreferences(this);
+
 	}
 }
