@@ -1,11 +1,17 @@
 package com.epitech.mcamera;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,9 +23,14 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.hardware.Camera;
+import com.epitech.mcamera.ZoomPlugin;
 
 public class MainActivity extends Activity {
-
+	
+	private OnSharedPreferenceChangeListener listener = null;
+	private SharedPreferences prefs = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -30,6 +41,16 @@ public class MainActivity extends Activity {
 		 */
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
+		
+		UpdatePref();
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+			public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+				UpdatePref();
+			}
+		};
+		prefs.registerOnSharedPreferenceChangeListener(listener);		
+	
 
         if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
@@ -74,6 +95,9 @@ public class MainActivity extends Activity {
 		private MySurfaceView mPreview = null;
 		private View rootView;
 		private static String TAG = "PlaceholderFragment";
+		
+		Camera camera;
+		List<plugin> plugins;
 
 		public PlaceholderFragment() {
 		}
@@ -88,7 +112,6 @@ public class MainActivity extends Activity {
 
 			// Create our Preview view and set it as the content of our
 			// activity.
-			
 
 			Button photoButton = (Button) rootView
 					.findViewById(R.id.button_photo);
@@ -111,34 +134,12 @@ public class MainActivity extends Activity {
 					mPreview.takeVideo();
 				}
 			});
+
+			plugins = new ArrayList<MainActivity.PlaceholderFragment.plugin>();
+			plugins.add(new ZoomPlugin());
+
+
 			return rootView;
-		}
-
-		private void setFeatureControls(String featureName, View rootView) {
-			if (featureName == MySurfaceView.ZOOM_FEATURE_NAME) {
-				Button zoomPlus = (Button) rootView
-						.findViewById(R.id.button_zoom_plus);
-				Button zoomMinus = (Button) rootView
-						.findViewById(R.id.button_zoom_minus);
-				zoomMinus.setOnClickListener(new OnZoomButtonPushedListerner());
-				zoomPlus.setOnClickListener(new OnZoomButtonPushedListerner());
-				zoomMinus.setVisibility(View.VISIBLE);
-				zoomPlus.setVisibility(View.VISIBLE);
-			}
-		}
-
-		public class OnZoomButtonPushedListerner implements OnClickListener {
-			@Override
-			public void onClick(View v) {
-				switch (v.getId()) {
-				case R.id.button_zoom_plus:
-
-					break;
-				case R.id.button_zoom_minus:
-
-					break;
-				}
-			}
 		}
 
 		@Override
@@ -147,26 +148,25 @@ public class MainActivity extends Activity {
 			super.onResume();
 
 			mPreview = new MySurfaceView(getActivity(), (RelativeLayout) rootView.findViewById(R.id.relavmain));
+
 			FrameLayout preview = (FrameLayout) rootView
 					.findViewById(R.id.camera_preview);
 			preview.addView(mPreview);
 			mPreview.startPreview();
-			
-			Log.v(TAG, "Checks feature");
-			if (mPreview.hasFeature(MySurfaceView.ZOOM_FEATURE_NAME)) {
-				Log.v(TAG, "On a la feature");
-				setFeatureControls(MySurfaceView.ZOOM_FEATURE_NAME, rootView);
-			} else {
-				Log.v(TAG, "On a pas la feature");
-				
+			MySurfaceView camera = mPreview;
+
+			for (int i = 0; i < plugins.size(); ++i) {
+				plugins.get(i).askFeature(mPreview, rootView);
 			}
+
 		}
+
 
 		@Override
 		public void onPause() {
 			super.onPause();
 			Log.d(TAG, "ONPAUSE");
-		
+
 			FrameLayout preview = (FrameLayout) rootView
 					.findViewById(R.id.camera_preview);
 			preview.removeView(mPreview);
@@ -174,7 +174,14 @@ public class MainActivity extends Activity {
 			mPreview = null;
 		}
 
-	
-	}
+		public interface plugin {
+			public void askFeature(MySurfaceView preview, View rootview);
+		}
 
+	}
+	public void UpdatePref() {
+		//get latest settings from the xml config file
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		
+	}
 }

@@ -7,6 +7,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.*;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -28,6 +29,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	private Context mContext;
     private RelativeLayout rootview;
 	public static String ZOOM_FEATURE_NAME = "ZOOM";
+	public static String SMOOTHZOOM_FEATURE_NAME = "SMOOTHZOOM";
     LocationManager locationManager;
     LocationListener locationListener;
 
@@ -37,6 +39,9 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		mContext = context;
         getHolder().addCallback(this);
 		Log.d(TAG, "surfaceView Constructor");
+
+		getHolder().addCallback(this);
+		Log.d(TAG, "surfaceView Constructor"); 
 
 		mCamera = new MCamera();
 		if (!mCamera.init(context, rl)) {
@@ -127,6 +132,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		Log.d(TAG, "mHolder = "+mHolder+" holder = "+holder);
 		mHolder = holder;
 		try {
+			
+			
 			mCamera.getCamera().getParameters().setPreviewSize(w, h);
 			mCamera.getCamera().getParameters().setPreviewFormat(format);
 			mCamera.getCamera().setPreviewDisplay(mHolder);
@@ -163,6 +170,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	public void destroyPreview() {
 		Log.d(TAG, "DESTROY PREVIEW mCamera=" + mCamera);
 		mCamera.getCamera().setPreviewCallback(null);
+		this.getHolder().removeCallback(this);
 		mCamera.destroy();
 	}
 	
@@ -195,7 +203,10 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		if (mCamera.isRecording() == false)
 			mCamera.startVideoRecording(mHolder);
 		else
-			mCamera.stoptVideoRecording();
+			mCamera.stopVideoRecording();
 	}
 
+	public Camera getCamera() {
+		return mCamera.getCamera();
+	}
 }

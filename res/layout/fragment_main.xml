@@ -30,10 +30,11 @@
         android:id="@+id/camera_button"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
         android:layout_alignParentRight="true"
-        android:orientation="vertical" 
-        android:background="#80000000" >
+        android:layout_gravity="center_vertical"
+        android:background="#80000000"
+        android:gravity="center_vertical"
+        android:orientation="vertical" >
 
         <Button
             android:id="@+id/button_zoom_plus"
@@ -42,13 +43,6 @@
             android:layout_gravity="center"
             android:text="Zoom +"
             android:visibility="gone" />
-
-        <Button
-            android:id="@+id/button_capture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Capture" />
 
         <Button
             android:id="@+id/button_zoom_minus"
