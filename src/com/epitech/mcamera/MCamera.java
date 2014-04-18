@@ -57,6 +57,7 @@ public class MCamera {
 
 	public void destroy() {
 		Log.d(TAG, "destroy called.");
+		stoptVideoRecording();
 		mCamera.stopPreview();
 		mCamera.release();
 		mCamera = null;
@@ -324,6 +325,8 @@ public class MCamera {
 	}
 
 	public void stoptVideoRecording() {
+		if (!mIsRecording)
+			return;
 		mMediaRecorder.stop();
 		releaseMediaRecorder();
 		mCamera.lock();
