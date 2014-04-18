@@ -13,7 +13,6 @@ import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore.Files.FileColumns;
@@ -25,6 +24,7 @@ public class MCamera {
 	private static String mSaveDir = "MyCameraApp";
 	private Camera mCamera = null;
 	private MediaRecorder mMediaRecorder;
+	private boolean isRecording = false;
 
 	public MCamera() {
 
@@ -218,8 +218,10 @@ public class MCamera {
 	}
 
 	public boolean startVideoRecording(SurfaceHolder holder) {
-		if (prepareVideoRecorder(holder))
+		if (prepareVideoRecorder(holder)) {
 			mMediaRecorder.start();
+			isRecording = true;
+		}
 		else {
 			releaseMediaRecorder();
 			return false;
@@ -232,5 +234,10 @@ public class MCamera {
 		mMediaRecorder.stop();
 		releaseMediaRecorder();
 		mCamera.lock();
+		isRecording = false;
+	}
+	
+	public boolean isRecording() {
+		return isRecording;
 	}
 }
