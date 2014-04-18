@@ -3,7 +3,7 @@
     tools:context="com.epitech.mcamera.MainActivity" >
 
  <item
-   android:title="Settings"
+   android:title="@string/action_settings"
    android:showAsAction="never"
    android:id="@+id/settings" >
 </item>

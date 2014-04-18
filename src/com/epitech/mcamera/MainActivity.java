@@ -1,6 +1,7 @@
 package com.epitech.mcamera;
 
 
+
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,8 +45,9 @@ public class MainActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main, menu);
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
@@ -63,6 +66,7 @@ public class MainActivity extends Activity {
 	private void showUserSettings() {
 		startActivity(new Intent(MainActivity.this, UserSettingsActivity.class));
 	}
+	
 	
 	 public void onConfigurationChanged(Configuration newConfig) {               
 		 super.onConfigurationChanged(newConfig);                                                                                         

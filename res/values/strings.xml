@@ -4,5 +4,16 @@
     <string name="app_name">mCamera</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    
+     <string-array name="type_format">
+        <item name="Format1">Format1</item>
+        <item name="Format2">Format2</item>
+        <item name="Format3">Format3</item>
+    </string-array>
 
+      <string-array name="type_format_value">
+        <item name="Format1">1</item>
+        <item name="Format2">2</item>
+        <item name="Format3">3</item>
+    </string-array>
 </resources>
