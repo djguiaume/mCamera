@@ -31,7 +31,6 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		super(context);
 		mContext = context;
 
-
 		getHolder().addCallback(this);
 		Log.d(TAG, "surfaceView Constructor"); 
 		mCamera = new MCamera();
@@ -179,4 +178,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 			mCamera.stoptVideoRecording();
 	}
 
+	public Camera getCamera() {
+		return mCamera.getCamera();
+	}
 }

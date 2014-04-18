@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.hardware.Camera;
+
 
 public class MainActivity extends Activity {
 
@@ -72,6 +74,8 @@ public class MainActivity extends Activity {
 		private MySurfaceView mPreview = null;
 		private View rootView;
 		private static String TAG = "PlaceholderFragment";
+		private boolean isSmoothZoomAvalaible = false;
+		private boolean isSmoothZooming = false;
 
 		public PlaceholderFragment() {
 		}
@@ -123,6 +127,11 @@ public class MainActivity extends Activity {
 				zoomPlus.setOnClickListener(new OnZoomButtonPushedListerner());
 				zoomMinus.setVisibility(View.VISIBLE);
 				zoomPlus.setVisibility(View.VISIBLE);
+				if (mPreview.hasFeature(MySurfaceView.SMOOTHZOOM_FEATURE_NAME)) {
+					isSmoothZoomAvalaible = true;
+				} else {
+					isSmoothZoomAvalaible = false;
+				}
 			}
 		}
 
@@ -140,6 +149,13 @@ public class MainActivity extends Activity {
 			}
 		}
 
+		private class ZoomPlugin {
+			public ZoomPlugin() {
+				Camera cam = mPreview.getCamera();
+
+			}
+		}
+		
 		@Override
 		public void onResume() {
 			Log.d(TAG, "ON RESUME VIEW");
