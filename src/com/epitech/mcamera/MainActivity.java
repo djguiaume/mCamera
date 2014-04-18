@@ -1,8 +1,10 @@
 package com.epitech.mcamera;
 
+
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -51,18 +53,27 @@ public class MainActivity extends Activity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		if (id == R.id.settings) {
+			showUserSettings();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	private void showUserSettings() {
+		startActivity(new Intent(MainActivity.this, UserSettingsActivity.class));
+	}
+	
+	 public void onConfigurationChanged(Configuration newConfig) {               
+		 super.onConfigurationChanged(newConfig);                                                                                         
+		 }
 
 	/**
 	 * A placeholder fragment containing a simple view.
 	 */
 	public static class PlaceholderFragment extends Fragment {
 
-		private mySurfaceView mPreview = null;
+		private MySurfaceView mPreview = null;
 		private View rootView;
 
 		public PlaceholderFragment() {
@@ -77,7 +88,7 @@ public class MainActivity extends Activity {
 
 			// Create our Preview view and set it as the content of our
 			// activity.
-			mPreview = new mySurfaceView(getActivity());
+			mPreview = new MySurfaceView(getActivity());
 			FrameLayout preview = (FrameLayout) rootView
 					.findViewById(R.id.camera_preview);
 			preview.addView(mPreview);
@@ -146,7 +157,7 @@ public class MainActivity extends Activity {
 				//mPreview.startPreview();
 				return;
 			}
-			mPreview = new mySurfaceView(getActivity());
+			mPreview = new MySurfaceView(getActivity());
 			FrameLayout preview = (FrameLayout) rootView
 					.findViewById(R.id.camera_preview);
 			preview.addView(mPreview);
