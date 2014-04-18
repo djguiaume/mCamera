@@ -92,7 +92,6 @@ public class MainActivity extends Activity {
 					Log.d(ACCOUNT_SERVICE, "onClick");
 					mPreview.takePicture();
 					// mPreview.stopPreview();
-					 mPreview.startPreview();
 				}
 			});
 
