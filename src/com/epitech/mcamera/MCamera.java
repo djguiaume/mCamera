@@ -16,7 +16,6 @@ import android.location.Location;
 import android.media.ExifInterface;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -31,7 +30,7 @@ public class MCamera {
 	private Camera mCamera = null;
 	private Location location = null;
 	private MediaRecorder mMediaRecorder;
-	private boolean isRecording = false;
+	private boolean mIsRecording = false;
 	private Context mContext = null;
 
 	public MCamera() {
@@ -204,7 +203,7 @@ public class MCamera {
 			} catch (IOException e) {
 				Log.d(TAG, "Error accessing file: " + e.getMessage());
 			}
-			
+
 			ContentValues image = new ContentValues();
 
 			image.put(Images.Media.TITLE, pictureFile.getName());
@@ -249,76 +248,89 @@ public class MCamera {
 		}
 	}
 
-	private boolean prepareVideoRecorder(SurfaceHolder holder) {
+	private class TakeVideoTask extends AsyncTask<SurfaceHolder, Void, Boolean> {
 
-		// mCamera = getCameraInstance();
-		Log.d("VIDEO", "mCamera =" + mCamera);
-		if (mCamera == null)
-			return false;
-		mMediaRecorder = new MediaRecorder();
-		mCamera.unlock();
-		mMediaRecorder.setCamera(mCamera);
-
-		mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
-		mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-		mMediaRecorder.setProfile(CamcorderProfile
-				.get(CamcorderProfile.QUALITY_HIGH));
-
-		try {
-			mMediaRecorder.setOutputFile(getOutputMediaFile(
-					FileColumns.MEDIA_TYPE_VIDEO).toString());
-		} catch (Exception e) {
-			Log.e(TAG, e.getMessage());
-			return false;
+		@Override
+		protected void onPostExecute(Boolean recording) {
+			if (recording)
+				return;
+			releaseMediaRecorder();
+			mIsRecording = false;
 		}
 
-		// TODO: Do in MySurfaceView?
-		mMediaRecorder.setPreviewDisplay(holder.getSurface());
-
-		try {
-			mMediaRecorder.prepare();
-		} catch (IllegalStateException e) {
-			Log.d(TAG,
-					"IllegalStateException preparing MediaRecorder: "
+		@Override
+		protected Boolean doInBackground(SurfaceHolder... holder) {
+			if (prepareVideoRecorder(holder[0])) {
+				try {
+					mMediaRecorder.start();
+					mIsRecording = true;
+				} catch (IllegalStateException e) {
+					Log.d(TAG, "IllegalStateException starting MediaRecorder: "
 							+ e.getMessage());
-			releaseMediaRecorder();
-			return false;
-		} catch (IOException e) {
-			Log.d(TAG, "IOException preparing MediaRecorder: " + e.getMessage());
-			releaseMediaRecorder();
-			return false;
+					return false;
+				}
+			} else
+				return false;
+			return true;
 		}
-		return true;
-	}
 
-	public boolean startVideoRecording(SurfaceHolder holder) {
-		if (prepareVideoRecorder(holder)) {
+		private boolean prepareVideoRecorder(SurfaceHolder holder) {
+
+			// mCamera = getCameraInstance();
+			Log.d("VIDEO", "mCamera =" + mCamera);
+			if (mCamera == null)
+				return false;
+			mMediaRecorder = new MediaRecorder();
+			mCamera.unlock();
+			mMediaRecorder.setCamera(mCamera);
+
+			mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+			mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+			mMediaRecorder.setProfile(CamcorderProfile
+					.get(CamcorderProfile.QUALITY_HIGH));
+
 			try {
-				mMediaRecorder.start();
-				isRecording = true;
+				mMediaRecorder.setOutputFile(getOutputMediaFile(
+						FileColumns.MEDIA_TYPE_VIDEO).toString());
+			} catch (Exception e) {
+				Log.e(TAG, e.getMessage());
+				return false;
+			}
+
+			// TODO: Do in MySurfaceView?
+			mMediaRecorder.setPreviewDisplay(holder.getSurface());
+
+			try {
+				mMediaRecorder.prepare();
 			} catch (IllegalStateException e) {
+				Log.d(TAG, "IllegalStateException preparing MediaRecorder: "
+						+ e.getMessage());
+				releaseMediaRecorder();
+				return false;
+			} catch (IOException e) {
 				Log.d(TAG,
-						"IllegalStateException starting MediaRecorder: "
+						"IOException preparing MediaRecorder: "
 								+ e.getMessage());
 				releaseMediaRecorder();
 				return false;
 			}
-		} else {
-			releaseMediaRecorder();
-			return false;
+			return true;
 		}
-		return true;
+	}
 
+	public boolean startVideoRecording(SurfaceHolder holder) {
+		new TakeVideoTask().execute(holder);
+		return mIsRecording;
 	}
 
 	public void stoptVideoRecording() {
 		mMediaRecorder.stop();
 		releaseMediaRecorder();
 		mCamera.lock();
-		isRecording = false;
+		mIsRecording = false;
 	}
 
 	public boolean isRecording() {
-		return isRecording;
+		return mIsRecording;
 	}
 }
