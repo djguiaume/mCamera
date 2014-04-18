@@ -131,8 +131,11 @@ public class MainActivity extends Activity {
 				}
 			});
 
+			
 			plugins = new ArrayList<MainActivity.PlaceholderFragment.plugin>();
 			plugins.add(new ZoomPlugin());
+			
+			
 			// mPreview.startPreview();
 			return rootView;
 		}
@@ -155,12 +158,6 @@ public class MainActivity extends Activity {
 
 		}
 
-		public interface plugin {
-			public void askFeature(MySurfaceView preview, View rootview,
-					Camera camera);
-		}
-
-	
 
 		@Override
 		public void onPause() {
@@ -172,6 +169,11 @@ public class MainActivity extends Activity {
 			preview.removeView(mPreview);
 			mPreview.destroyPreview();
 			mPreview = null;
+		}
+
+		public interface plugin {
+			public void askFeature(MySurfaceView preview, View rootview,
+					Camera camera);
 		}
 
 	}

@@ -13,8 +13,11 @@ public class ZoomPlugin implements plugin {
 	Camera mCamera;
 	View mRootView;
 	private boolean isSmoothZoomAvalaible = false;
-	private boolean isSmoothZooming = false;
 	private String TAG = "ZoomPlugin";
+	private int maxZoom;
+	private int zoomStepNumber = 4;
+	private int zoomStepValue;
+	Camera.Parameters params;
 
 	@Override
 	public void askFeature(MySurfaceView preview, View rootview, Camera camera) {
@@ -45,18 +48,47 @@ public class ZoomPlugin implements plugin {
 			isSmoothZoomAvalaible = false;
 		}
 
+		params = mCamera.getParameters();
+		maxZoom = params.getMaxZoom();
+		Log.v(TAG, "Smooth zoom Max = " + maxZoom);
+		zoomStepValue = maxZoom / zoomStepNumber;
+
+	}
+
+	private void zoom(int zoomTo) {
+		if (isSmoothZoomAvalaible) {
+			mCamera.stopSmoothZoom();
+			mCamera.startSmoothZoom(zoomTo);
+		} else {
+			params.setZoom(zoomTo);
+		}
+		mCamera.setParameters(params);
 	}
 
 	public class OnZoomButtonPushedListerner implements OnClickListener {
 		@Override
 		public void onClick(View v) {
+			Log.d(TAG, "un bouton de zoom est clique");
+			if (isSmoothZoomAvalaible) {
+				mCamera.stopSmoothZoom();
+			}
+			int currentZoom = params.getZoom();
+			int newZoom = 0;
 			switch (v.getId()) {
 			case R.id.button_zoom_plus:
-
+				newZoom = currentZoom + zoomStepValue;
+				newZoom = maxZoom < newZoom ? maxZoom : newZoom;
+				
 				break;
 			case R.id.button_zoom_minus:
-
+				newZoom = currentZoom - zoomStepValue;
+				newZoom = newZoom < 0 ? 0 : newZoom;
+			
 				break;
+			}
+			Log.d(TAG, "newZoom:" + newZoom + " current: " + currentZoom);
+			if (newZoom != currentZoom) {
+				zoom(newZoom);
 			}
 		}
 	}
