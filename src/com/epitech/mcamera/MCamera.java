@@ -9,8 +9,11 @@ import java.util.Date;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.location.Location;
 import android.media.ExifInterface;
@@ -19,6 +22,7 @@ import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Files.FileColumns;
 import android.provider.MediaStore.Images;
@@ -33,7 +37,8 @@ public class MCamera {
 	private MediaRecorder mMediaRecorder;
 	private boolean isRecording = false;
 	private Context mContext = null;
-
+	/*private OnSharedPreferenceChangeListener listener = null;
+	private SharedPreferences prefs = null;*/
 	public MCamera() {
 
 	}
@@ -43,7 +48,15 @@ public class MCamera {
 	}
 
 	public boolean init(Context context) {
-		mContext = context;
+		
+			mContext = context;
+			/*prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.);
+			listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+				public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+					UpdatePref();
+				}
+			};
+			prefs.registerOnSharedPreferenceChangeListener(listener);	*/
 		if (mCamera != null) {
 			Log.d(TAG, "already init.");
 			return false;
@@ -320,5 +333,9 @@ public class MCamera {
 
 	public boolean isRecording() {
 		return isRecording;
+	}
+	
+	public void torcheLight(){
+		mCamera.getParameters().setFlashMode(Parameters.FLASH_MODE_ON);
 	}
 }

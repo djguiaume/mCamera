@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -178,4 +179,5 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 			mCamera.stoptVideoRecording();
 	}
 
+	
 }

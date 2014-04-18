@@ -3,8 +3,11 @@ package com.epitech.mcamera;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,7 +20,10 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 
 public class MainActivity extends Activity {
-
+	
+	private OnSharedPreferenceChangeListener listener = null;
+	private SharedPreferences prefs = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -28,6 +34,16 @@ public class MainActivity extends Activity {
 		 */
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
+		
+		UpdatePref();
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+			public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+				UpdatePref();
+			}
+		};
+		prefs.registerOnSharedPreferenceChangeListener(listener);		
+	
 
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
@@ -175,5 +191,9 @@ public class MainActivity extends Activity {
 
 	
 	}
-
+	public void UpdatePref() {
+		//get latest settings from the xml config file
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+		
+	}
 }
