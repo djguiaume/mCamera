@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 /** A basic Camera preview class */
 public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
@@ -25,19 +26,20 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
     private SurfaceHolder mHolder;
 	private MCamera mCamera;
 	private Context mContext;
+    private RelativeLayout rootview;
 	public static String ZOOM_FEATURE_NAME = "ZOOM";
     LocationManager locationManager;
     LocationListener locationListener;
 
-
-
-	public MySurfaceView(Context context) {
+	public MySurfaceView(Context context, RelativeLayout rl) {
 		super(context);
+        rootview = rl;
 		mContext = context;
         getHolder().addCallback(this);
-		Log.d(TAG, "surfaceView Constructor"); 
+		Log.d(TAG, "surfaceView Constructor");
+
 		mCamera = new MCamera();
-		if (!mCamera.init(context)) {
+		if (!mCamera.init(context, rl)) {
 			Log.e("onCreateView", "mCamera init failed (no camera?)");
 			// TODO: Show a message to user and quit?
 		}
@@ -45,12 +47,14 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
 	}
 
+
 	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @Override
 	public void surfaceCreated(SurfaceHolder holder) {
 		Log.w("surfaceCreated", "On Surface Created");
 		mHolder = holder;
         startPreview();
+
         locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
@@ -113,7 +117,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		}*/
 		
 		mCamera.destroy();
-		if (!mCamera.init(mContext)) {
+		if (!mCamera.init(mContext, rootview)) {
 			Log.e("onCreateView", "mCamera init failed (no camera?)");
 			// TODO: Show a message to user and quit?
 		}
@@ -131,7 +135,10 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 			Log.d(TAG, "Error starting camera preview: " + e.getMessage());
 		}
 
-
+        RelativeLayout mmainLay = (RelativeLayout) findViewById(R.id.overlay);
+        if(mmainLay == null) {
+            Log.d(MySurfaceView.VTAG, "LAYOU FUCKIN NULL");
+        }
 	}
 
 	public void startPreview() {

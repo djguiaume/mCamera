@@ -25,7 +25,10 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.Files.FileColumns;
 import android.provider.MediaStore.Images;
 import android.util.Log;
+import android.view.Display;
 import android.view.SurfaceHolder;
+import android.view.WindowManager;
+import android.widget.RelativeLayout;
 
 public class MCamera {
 	private static String TAG = "MCamera";
@@ -35,6 +38,7 @@ public class MCamera {
 	private MediaRecorder mMediaRecorder;
 	private boolean isRecording = false;
 	private Context mContext = null;
+    public InYourFaceListen faces;
 
 	public MCamera() {
 
@@ -44,7 +48,7 @@ public class MCamera {
 		location = loc;
 	}
 
-	public boolean init(Context context) {
+	public boolean init(Context context, RelativeLayout ly) {
 		mContext = context;
 		if (mCamera != null) {
 			Log.d(TAG, "already init.");
@@ -54,9 +58,12 @@ public class MCamera {
 			return false;
 		mCamera = getCameraInstance();
 
-        mCamera.setFaceDetectionListener (new OverlayView(context));
+			/*
+			 * checking for the rotation and adjusting the view accordingly
+			 */
+
+        mCamera.setFaceDetectionListener(new InYourFaceListen(this.mContext, ly));
         mCamera.startFaceDetection();
-        Log.d(MySurfaceView.VTAG, "Face detection started");
 
 		if (mCamera == null)
 			return false;

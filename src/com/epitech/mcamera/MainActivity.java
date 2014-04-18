@@ -2,6 +2,7 @@ package com.epitech.mcamera;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 public class MainActivity extends Activity {
 
@@ -109,8 +111,6 @@ public class MainActivity extends Activity {
 					mPreview.takeVideo();
 				}
 			});
-
-			// mPreview.startPreview();
 			return rootView;
 		}
 
@@ -145,8 +145,8 @@ public class MainActivity extends Activity {
 		public void onResume() {
 			Log.d(TAG, "ON RESUME VIEW");
 			super.onResume();
-			
-			mPreview = new MySurfaceView(getActivity());
+
+			mPreview = new MySurfaceView(getActivity(), (RelativeLayout) rootView.findViewById(R.id.relavmain));
 			FrameLayout preview = (FrameLayout) rootView
 					.findViewById(R.id.camera_preview);
 			preview.addView(mPreview);
