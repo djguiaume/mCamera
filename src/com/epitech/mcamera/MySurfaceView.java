@@ -1,8 +1,11 @@
 package com.epitech.mcamera;
 
 import java.io.IOException;
+import java.util.List;
 
+import android.R.bool;
 import android.content.Context;
+import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -13,6 +16,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	private SurfaceHolder mHolder;
 	private MCamera mCamera;
 	private Context mContext;
+	public static String ZOOM_FEATURE_NAME = "ZOOM";
 
 	public MySurfaceView(Context context) {
 		super(context);
@@ -106,5 +110,24 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	
 	public void takePicture() {
 		mCamera.takePicture();
+	}
+	
+	public boolean hasFeature(String featureName) {
+		
+		Camera cam = MCamera.getCameraInstance();
+		
+		if (cam != null) {
+			Camera.Parameters params = cam.getParameters();
+			
+			if (featureName == ZOOM_FEATURE_NAME) {
+				return params.isZoomSupported();
+			}
+			
+			List<String> focusModes = params.getSupportedFocusModes();
+			if (focusModes.contains(featureName)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
