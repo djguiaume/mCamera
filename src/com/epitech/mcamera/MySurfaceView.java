@@ -78,7 +78,11 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
         }
         else Log.d(MySurfaceView.VTAG, "No fuckin provider");
 
-        setWillNotDraw(false);
+        OverlayView ov =  (OverlayView) findViewById(R.id.overlay);
+        if (ov != null) {
+            ov.setFaces(mCamera.getFaces());
+            mCamera.faces.setView(ov);
+        }
         mCamera.getCamera().startFaceDetection();
         Log.d(MySurfaceView.VTAG, "Face detection started");
     }

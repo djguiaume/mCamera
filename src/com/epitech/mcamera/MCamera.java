@@ -34,7 +34,7 @@ public class MCamera {
 	private Location location = null;
 	private MediaRecorder mMediaRecorder;
 	private boolean isRecording = false;
-    private InYourFaceDetection faces;
+    public InYourFaceDetection faces;
 	private Context mContext = null;
 
 	public MCamera() {
@@ -59,6 +59,7 @@ public class MCamera {
 			return false;
 		mCamera = getCameraInstance();
         faces = new InYourFaceDetection();
+
         mCamera.setFaceDetectionListener(faces);
 		if (mCamera == null)
 			return false;
