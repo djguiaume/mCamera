@@ -7,11 +7,13 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.support.v4.widget.SearchViewCompat.OnCloseListenerCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -106,9 +108,38 @@ public class MainActivity extends Activity {
 				}
 			});
 
+			if (mPreview.hasFeature(MySurfaceView.ZOOM_FEATURE_NAME)) {
+				setFeatureControls(MySurfaceView.ZOOM_FEATURE_NAME, rootView);
+			}
 			// mPreview.startPreview();
 
 			return rootView;
+		}
+
+		private void setFeatureControls(String featureName, View rootView) {
+			if (featureName == MySurfaceView.ZOOM_FEATURE_NAME) {
+				Button zoomPlus = (Button) rootView
+						.findViewById(R.id.button_zoom_plus);
+				Button zoomMinus = (Button) rootView
+						.findViewById(R.id.button_zoom_minus);
+				zoomMinus.setOnClickListener(new onZoomListerner());
+				zoomPlus.setOnClickListener(new onZoomListerner());
+			}
+		}
+
+		public class onZoomListerner implements OnClickListener {
+			@Override
+			public void onClick(View v) {
+				switch (v.getId()) {
+				case R.id.button_zoom_plus:
+
+					break;
+				case R.id.button_zoom_minus:
+
+					break;
+				}
+			}
+
 		}
 
 		@Override
