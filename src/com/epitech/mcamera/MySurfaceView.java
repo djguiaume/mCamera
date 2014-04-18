@@ -21,6 +21,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	private MCamera mCamera;
 	private Context mContext;
 	public static String ZOOM_FEATURE_NAME = "ZOOM";
+	public static String SMOOTHZOOM_FEATURE_NAME = "SMOOTHZOOM";
     LocationManager locationManager;
     LocationListener locationListener;
 
