@@ -320,6 +320,10 @@ public class MCamera {
 	}
 
 	public boolean startVideoRecording(SurfaceHolder holder) {
+		if (mIsRecording) {
+			Log.w(TAG, "Video already recording!");
+			return true;
+		}
 		new TakeVideoTask().execute(holder);
 		return mIsRecording;
 	}
