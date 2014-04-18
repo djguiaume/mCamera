@@ -13,9 +13,7 @@ import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.location.Location;
 import android.media.ExifInterface;
-import android.net.Uri;
 import android.media.CamcorderProfile;
-import android.media.CameraProfile;
 import android.media.MediaRecorder;
 
 import android.os.AsyncTask;

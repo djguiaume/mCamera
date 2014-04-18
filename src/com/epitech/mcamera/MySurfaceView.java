@@ -3,18 +3,12 @@ package com.epitech.mcamera;
 import java.io.IOException;
 import java.util.List;
 
-import android.R.bool;
 import android.content.Context;
 import android.hardware.Camera;
-<<<<<<< HEAD
-=======
-import android.hardware.Camera.Size;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-
->>>>>>> FETCH_HEAD
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
