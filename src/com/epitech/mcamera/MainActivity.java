@@ -151,10 +151,10 @@ public class MainActivity extends Activity {
 					.findViewById(R.id.camera_preview);
 			preview.addView(mPreview);
 			mPreview.startPreview();
-			camera = mPreview.getCamera();
+			MySurfaceView camera = mPreview;
 
 			for (int i = 0; i < plugins.size(); ++i) {
-				plugins.get(i).askFeature(mPreview, rootView, camera);
+				plugins.get(i).askFeature(mPreview, rootView);
 			}
 
 		}
@@ -173,8 +173,7 @@ public class MainActivity extends Activity {
 		}
 
 		public interface plugin {
-			public void askFeature(MySurfaceView preview, View rootview,
-					Camera camera);
+			public void askFeature(MySurfaceView preview, View rootview);
 		}
 
 	}

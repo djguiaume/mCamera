@@ -10,7 +10,6 @@ import com.epitech.mcamera.MainActivity.PlaceholderFragment.plugin;
 
 public class ZoomPlugin implements plugin {
 	MySurfaceView mPreview;
-	Camera mCamera;
 	View mRootView;
 	private boolean isSmoothZoomAvalaible = false;
 	private String TAG = "ZoomPlugin";
@@ -20,9 +19,8 @@ public class ZoomPlugin implements plugin {
 	Camera.Parameters params;
 
 	@Override
-	public void askFeature(MySurfaceView preview, View rootview, Camera camera) {
+	public void askFeature(MySurfaceView preview, View rootview) {
 		mPreview = preview;
-		mCamera = camera;
 		mRootView = rootview;
 
 		Log.v(TAG, "Checks feature");
@@ -48,7 +46,7 @@ public class ZoomPlugin implements plugin {
 			isSmoothZoomAvalaible = false;
 		}
 
-		params = mCamera.getParameters();
+		params = mPreview.getCamera().getParameters();
 		maxZoom = params.getMaxZoom();
 		Log.v(TAG, "Smooth zoom Max = " + maxZoom);
 		zoomStepValue = maxZoom / zoomStepNumber;
@@ -57,12 +55,12 @@ public class ZoomPlugin implements plugin {
 
 	private void zoom(int zoomTo) {
 		if (isSmoothZoomAvalaible) {
-			mCamera.stopSmoothZoom();
-			mCamera.startSmoothZoom(zoomTo);
+			mPreview.getCamera().stopSmoothZoom();
+			mPreview.getCamera().startSmoothZoom(zoomTo);
 		} else {
 			params.setZoom(zoomTo);
 		}
-		mCamera.setParameters(params);
+		mPreview.getCamera().setParameters(params);
 	}
 
 	public class OnZoomButtonPushedListerner implements OnClickListener {
@@ -70,7 +68,7 @@ public class ZoomPlugin implements plugin {
 		public void onClick(View v) {
 			Log.d(TAG, "un bouton de zoom est clique");
 			if (isSmoothZoomAvalaible) {
-				mCamera.stopSmoothZoom();
+				mPreview.getCamera().stopSmoothZoom();
 			}
 			int currentZoom = params.getZoom();
 			int newZoom = 0;
