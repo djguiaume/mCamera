@@ -19,7 +19,6 @@ import android.location.Location;
 import android.media.ExifInterface;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -35,7 +34,7 @@ public class MCamera {
 	private Camera mCamera = null;
 	private Location location = null;
 	private MediaRecorder mMediaRecorder;
-	private boolean isRecording = false;
+	private boolean mIsRecording = false;
 	private Context mContext = null;
 
 	/*
@@ -74,6 +73,7 @@ public class MCamera {
 
 	public void destroy() {
 		Log.d(TAG, "destroy called.");
+		stoptVideoRecording();
 		mCamera.stopPreview();
 		mCamera.release();
 		mCamera = null;
@@ -265,6 +265,32 @@ public class MCamera {
 		}
 	}
 
+	private class TakeVideoTask extends AsyncTask<SurfaceHolder, Void, Boolean> {
+
+		@Override
+		protected void onPostExecute(Boolean recording) {
+			if (recording)
+				return;
+			releaseMediaRecorder();
+			mIsRecording = false;
+		}
+
+		@Override
+		protected Boolean doInBackground(SurfaceHolder... holder) {
+			if (prepareVideoRecorder(holder[0])) {
+				try {
+					mMediaRecorder.start();
+					mIsRecording = true;
+				} catch (IllegalStateException e) {
+					Log.d(TAG, "IllegalStateException starting MediaRecorder: "
+							+ e.getMessage());
+					return false;
+				}
+			} else
+				return false;
+			return true;
+		}
+
 	private boolean prepareVideoRecorder(SurfaceHolder holder) {
 
 		// mCamera = getCameraInstance();
@@ -317,34 +343,25 @@ public class MCamera {
 	}
 
 	public boolean startVideoRecording(SurfaceHolder holder) {
-		if (prepareVideoRecorder(holder)) {
-			try {
-				mMediaRecorder.start();
-				isRecording = true;
-			} catch (IllegalStateException e) {
-				Log.d(TAG,
-						"IllegalStateException starting MediaRecorder: "
-								+ e.getMessage());
-				releaseMediaRecorder();
-				return false;
-			}
-		} else {
-			releaseMediaRecorder();
-			return false;
+		if (mIsRecording) {
+			Log.w(TAG, "Video already recording!");
+			return true;
 		}
-		return true;
-
+		new TakeVideoTask().execute(holder);
+		return mIsRecording;
 	}
 
 	public void stoptVideoRecording() {
+		if (!mIsRecording)
+			return;
 		mMediaRecorder.stop();
 		releaseMediaRecorder();
 		mCamera.lock();
-		isRecording = false;
+		mIsRecording = false;
 	}
 
 	public boolean isRecording() {
-		return isRecording;
+		return mIsRecording;
 	}
 
 	public void torcheLight() {
