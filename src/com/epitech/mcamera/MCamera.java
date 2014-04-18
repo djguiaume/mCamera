@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
@@ -17,10 +18,12 @@ import android.media.ExifInterface;
 import android.media.CamcorderProfile;
 import android.media.FaceDetector;
 import android.media.MediaRecorder;
-
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.provider.MediaStore.Files.FileColumns;
+import android.provider.MediaStore.Images;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -28,24 +31,26 @@ public class MCamera {
 	private static String TAG = "MCamera";
 	private static String mSaveDir = "MyCameraApp";
 	private Camera mCamera = null;
-    private Location location = null;
+	private Location location = null;
 	private MediaRecorder mMediaRecorder;
 	private boolean isRecording = false;
     private InYourFaceDetection faces;
+	private Context mContext = null;
 
 	public MCamera() {
 
 	}
 
-    public void setLocation(Location loc) {
-        location = loc;
-    }
+	public void setLocation(Location loc) {
+		location = loc;
+	}
 
     public Camera.Face[] getFaces() {
         return faces.getFacist();
     }
 
 	public boolean init(Context context) {
+		mContext = context;
 		if (mCamera != null) {
 			Log.d(TAG, "already init.");
 			return false;
@@ -82,35 +87,40 @@ public class MCamera {
 		return mCamera;
 	}
 
-    private void SetExifGPSData(File fn) {
-        if (location == null)
-                return;
-        ExifInterface exif;
-        double glat = location.getLatitude();
-        double glong = location.getLongitude();
+	private void SetExifGPSData(File fn) {
+		if (location == null)
+			return;
+		ExifInterface exif;
+		double glat = location.getLatitude();
+		double glong = location.getLongitude();
 
-        Log.d(MySurfaceView.VTAG, "setting exif data lat : " + glat + " long : "  + glong);
+		Log.d(MySurfaceView.VTAG, "setting exif data lat : " + glat
+				+ " long : " + glong);
 
-        int num1Lat = (int)Math.floor(glat);
-        int num2Lat = (int)Math.floor((glat - num1Lat) * 60);
-        double num3Lat = (glat - ((double)num1Lat+((double)num2Lat/60))) * 3600000;
+		int num1Lat = (int) Math.floor(glat);
+		int num2Lat = (int) Math.floor((glat - num1Lat) * 60);
+		double num3Lat = (glat - ((double) num1Lat + ((double) num2Lat / 60))) * 3600000;
 
-        int num1Lon = (int)Math.floor(glong);
-        int num2Lon = (int)Math.floor((glong - num1Lon) * 60);
-        double num3Lon = (glong - ((double)num1Lon+((double)num2Lon/60))) * 3600000;
+		int num1Lon = (int) Math.floor(glong);
+		int num2Lon = (int) Math.floor((glong - num1Lon) * 60);
+		double num3Lon = (glong - ((double) num1Lon + ((double) num2Lon / 60))) * 3600000;
 
-        try {
-            exif = new ExifInterface(fn.getAbsolutePath());
-            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, num1Lat+"/1,"+num2Lat+"/1,"+num3Lat+"/1000");
-            exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, num1Lon+"/1,"+num2Lon+"/1,"+num3Lon+"/1000");
-            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, (glat > 0) ? "N" : "S");
-            exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, (glong > 0) ? "E" : "W");
-            exif.saveAttributes();
-        } catch (IOException e){
-            Log.d(MySurfaceView.VTAG, "Error set exif");
-        }
+		try {
+			exif = new ExifInterface(fn.getAbsolutePath());
+			exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, num1Lat + "/1,"
+					+ num2Lat + "/1," + num3Lat + "/1000");
+			exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, num1Lon + "/1,"
+					+ num2Lon + "/1," + num3Lon + "/1000");
+			exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF,
+					(glat > 0) ? "N" : "S");
+			exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF,
+					(glong > 0) ? "E" : "W");
+			exif.saveAttributes();
+		} catch (IOException e) {
+			Log.d(MySurfaceView.VTAG, "Error set exif");
+		}
 
-    }
+	}
 
 	public static Camera getCameraInstance() {
 
@@ -125,7 +135,8 @@ public class MCamera {
 
 	private static File getOutputMediaFile(int type) throws Exception {
 
-		if (!(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())))
+		if (!(Environment.MEDIA_MOUNTED.equals(Environment
+				.getExternalStorageState())))
 			throw new Exception("SDCard not properly mounted.");
 
 		File mediaStorageDir = new File(
@@ -196,12 +207,35 @@ public class MCamera {
 				Log.d(TAG, "data=" + data);
 				fos.write(data);
 				fos.close();
-                SetExifGPSData(pictureFile);
+				SetExifGPSData(pictureFile);
 			} catch (FileNotFoundException e) {
 				Log.d(TAG, "File not found: " + e.getMessage());
 			} catch (IOException e) {
 				Log.d(TAG, "Error accessing file: " + e.getMessage());
 			}
+			
+			ContentValues image = new ContentValues();
+
+			image.put(Images.Media.TITLE, pictureFile.getName());
+			image.put(Images.Media.DISPLAY_NAME, pictureFile.getName());
+			image.put(Images.Media.MIME_TYPE, "image/jpg");
+			if (location != null) {
+				image.put(Images.Media.LATITUDE, location.getLatitude());
+				image.put(Images.Media.LONGITUDE, location.getLongitude());
+			}
+			image.put(Images.Media.ORIENTATION, 0);
+
+			File parent = pictureFile.getParentFile();
+			String path = parent.toString().toLowerCase();
+			String name = parent.getName().toLowerCase();
+			image.put(Images.ImageColumns.BUCKET_ID, path.hashCode());
+			image.put(Images.ImageColumns.BUCKET_DISPLAY_NAME, name);
+			image.put(Images.Media.SIZE, pictureFile.length());
+
+			image.put(Images.Media.DATA, pictureFile.getAbsolutePath());
+
+			mContext.getContentResolver().insert(
+					MediaStore.Images.Media.EXTERNAL_CONTENT_URI, image);
 		}
 	};
 
@@ -229,7 +263,7 @@ public class MCamera {
 
 	private boolean prepareVideoRecorder(SurfaceHolder holder) {
 
-		//mCamera = getCameraInstance();
+		// mCamera = getCameraInstance();
 		Log.d("VIDEO", "mCamera =" + mCamera);
 		if (mCamera == null)
 			return false;
@@ -239,7 +273,8 @@ public class MCamera {
 
 		mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
 		mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-		mMediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
+		mMediaRecorder.setProfile(CamcorderProfile
+				.get(CamcorderProfile.QUALITY_HIGH));
 
 		try {
 			mMediaRecorder.setOutputFile(getOutputMediaFile(
@@ -271,8 +306,8 @@ public class MCamera {
 	public boolean startVideoRecording(SurfaceHolder holder) {
 		if (prepareVideoRecorder(holder)) {
 			try {
-			mMediaRecorder.start();
-			isRecording = true;
+				mMediaRecorder.start();
+				isRecording = true;
 			} catch (IllegalStateException e) {
 				Log.d(TAG,
 						"IllegalStateException starting MediaRecorder: "
@@ -280,8 +315,7 @@ public class MCamera {
 				releaseMediaRecorder();
 				return false;
 			}
-		}
-		else {
+		} else {
 			releaseMediaRecorder();
 			return false;
 		}
@@ -295,7 +329,7 @@ public class MCamera {
 		mCamera.lock();
 		isRecording = false;
 	}
-	
+
 	public boolean isRecording() {
 		return isRecording;
 	}
