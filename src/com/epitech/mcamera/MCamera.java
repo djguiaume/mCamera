@@ -83,6 +83,7 @@ public class MCamera {
 
 		if (mCamera == null)
 			return false;
+		setTorcheLight();
 		return true;
 	}
 
@@ -381,8 +382,20 @@ public class MCamera {
 		return mIsRecording;
 	}
 
-	public void torcheLight() {
-		mCamera.getParameters().setFlashMode(Parameters.FLASH_MODE_ON);
+	public void setTorcheLight(){
+		if (mCamera != null){
+			Parameters p = mCamera.getParameters();
+			if (prefs.getBoolean("flash_switch", true)){
+				p.setFlashMode(Parameters.FLASH_MODE_ON);
+				mCamera.setParameters(p);
+			}
+			else{ 
+				p.setFlashMode(Parameters.FLASH_MODE_OFF);
+				mCamera.setParameters(p);
+			}
+		}
+		else
+		Log.d(TAG, "mCamera pas la ");
 	}
 	
 	public void UpdatePref(Context context) {
