@@ -1,26 +1,20 @@
 package com.epitech.mcamera;
 
-
-
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.os.Build;
 
 public class MainActivity extends Activity {
 
@@ -45,9 +39,8 @@ public class MainActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 
 		// Inflate the menu; this adds items to the action bar if it is present.
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main, menu);
-		return super.onCreateOptionsMenu(menu);
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
 	}
 
 	@Override
@@ -62,23 +55,23 @@ public class MainActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	private void showUserSettings() {
 		startActivity(new Intent(MainActivity.this, UserSettingsActivity.class));
 	}
-	
-	
-	 public void onConfigurationChanged(Configuration newConfig) {               
-		 super.onConfigurationChanged(newConfig);                                                                                         
-		 }
+
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+	}
 
 	/**
 	 * A placeholder fragment containing a simple view.
 	 */
 	public static class PlaceholderFragment extends Fragment {
 
-		private mySurfaceView mPreview = null;
+		private MySurfaceView mPreview = null;
 		private View rootView;
+		private static String TAG = "PlaceholderFragment";
 
 		public PlaceholderFragment() {
 		}
@@ -88,87 +81,99 @@ public class MainActivity extends Activity {
 				Bundle savedInstanceState) {
 			rootView = inflater.inflate(R.layout.fragment_main, container,
 					false);
-			Log.d("toto", "ON CREATE VIEW");
+			Log.d(TAG, "ON CREATE VIEW");
 
 			// Create our Preview view and set it as the content of our
 			// activity.
-			mPreview = new mySurfaceView(getActivity());
-			FrameLayout preview = (FrameLayout) rootView
-					.findViewById(R.id.camera_preview);
-			preview.addView(mPreview);
+			
 
-			Button captureButton = (Button) rootView
-					.findViewById(R.id.button_capture);
-			captureButton.setOnClickListener(new View.OnClickListener() {
+			Button photoButton = (Button) rootView
+					.findViewById(R.id.button_photo);
+			photoButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					// get an image from the camera
-					// mPreview.stopPreview();
 					Log.d(ACCOUNT_SERVICE, "onClick");
 					mPreview.takePicture();
-					// mPreview.stopPreview();
+				}
+			});
+
+			Button videoButton = (Button) rootView
+					.findViewById(R.id.button_video);
+			videoButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					// get an image from the camera
+					Log.d(ACCOUNT_SERVICE, "onClick VIDEO");
+					mPreview.takeVideo();
 				}
 			});
 
 			// mPreview.startPreview();
-
 			return rootView;
 		}
 
-		@Override
-		public void onDestroyView() {
-			super.onDestroyView();
-			if (mPreview != null) {
-				Log.d("toto", "ONDESTROY VIEW");
-				mPreview.destroyPreview();
-				mPreview = null;
-				FrameLayout preview = (FrameLayout) rootView
-						.findViewById(R.id.camera_preview);
-				preview.removeView(mPreview);
+		private void setFeatureControls(String featureName, View rootView) {
+			if (featureName == MySurfaceView.ZOOM_FEATURE_NAME) {
+				Button zoomPlus = (Button) rootView
+						.findViewById(R.id.button_zoom_plus);
+				Button zoomMinus = (Button) rootView
+						.findViewById(R.id.button_zoom_minus);
+				zoomMinus.setOnClickListener(new OnZoomButtonPushedListerner());
+				zoomPlus.setOnClickListener(new OnZoomButtonPushedListerner());
+				zoomMinus.setVisibility(View.VISIBLE);
+				zoomPlus.setVisibility(View.VISIBLE);
+			}
+		}
+
+		public class OnZoomButtonPushedListerner implements OnClickListener {
+			@Override
+			public void onClick(View v) {
+				switch (v.getId()) {
+				case R.id.button_zoom_plus:
+
+					break;
+				case R.id.button_zoom_minus:
+
+					break;
+				}
 			}
 		}
 
 		@Override
-		public void onDestroy() { 
-			super.onDestroy();
-
-			if (mPreview != null) {
-				Log.d("toto", "ONDESTROY");
-				mPreview.destroyPreview();
-				mPreview = null;
-				FrameLayout preview = (FrameLayout) rootView
-						.findViewById(R.id.camera_preview);
-				preview.removeView(mPreview);
+		public void onResume() {
+			Log.d(TAG, "ON RESUME VIEW");
+			super.onResume();
+			
+			mPreview = new MySurfaceView(getActivity());
+			FrameLayout preview = (FrameLayout) rootView
+					.findViewById(R.id.camera_preview);
+			preview.addView(mPreview);
+			mPreview.startPreview();
+			
+			Log.v(TAG, "Checks feature");
+			if (mPreview.hasFeature(MySurfaceView.ZOOM_FEATURE_NAME)) {
+				Log.v(TAG, "On a la feature");
+				setFeatureControls(MySurfaceView.ZOOM_FEATURE_NAME, rootView);
+			} else {
+				Log.v(TAG, "On a pas la feature");
+				
 			}
-			// mCamera = null;
 		}
 
 		@Override
 		public void onPause() {
 			super.onPause();
-			Log.d("toto", "ONPAUSE");
-			mPreview.destroyPreview();
-			mPreview = null;
+			Log.d(TAG, "ONPAUSE");
+		
 			FrameLayout preview = (FrameLayout) rootView
 					.findViewById(R.id.camera_preview);
 			preview.removeView(mPreview);
-			// mCamera = null;
+			mPreview.destroyPreview();
+			mPreview = null;
 		}
 
-		@Override
-		public void onResume() {
-			Log.d("toto", "ON RESUME VIEW");
-			super.onResume();
-			if (mPreview != null) {
-				//mPreview.startPreview();
-				return;
-			}
-			mPreview = new mySurfaceView(getActivity());
-			FrameLayout preview = (FrameLayout) rootView
-					.findViewById(R.id.camera_preview);
-			preview.addView(mPreview);
-			 mPreview.startPreview();
-		}
+	
 	}
 
 }
