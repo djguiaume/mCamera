@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import android.content.Context;
 import android.hardware.Camera;
+import android.hardware.Camera.Size;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -12,64 +13,77 @@ import android.view.SurfaceView;
 public class mySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 	private static final String TAG = "SURFACE";
 	private SurfaceHolder mHolder;
-	private Camera mCamera;
+	private MCamera mCamera;
+	private Context mContext;
 
-	public mySurfaceView(Context context, Camera camera) {
+	public mySurfaceView(Context context) {
 		super(context);
-		mCamera = camera;
-		SurfaceHolder mholder;
-
-		// Install a SurfaceHolder.Callback so we get notified when the
-		// underlying surface is created and destroyed.
-		mHolder = getHolder();
-		mHolder.addCallback(this);
-		// deprecated setting, but required on Android versions prior to 3.0
-		mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+		mContext = context;
+		getHolder().addCallback(this);
+		Log.d(TAG, "surfaceView Constructor"); 
+		mCamera = new MCamera();
+		if (!mCamera.init(context)) {
+			Log.e("onCreateView", "mCamera init failed (no camera?)");
+			// TODO: Show a message to user and quit?
+		}
 	}
-
+	
 	public void surfaceCreated(SurfaceHolder holder) {
-		// The Surface has been created, now tell the camera where to draw the preview.
+		Log.w("surfaceCreated", "On Surface Created");
 		mHolder = holder;
 		startPreview();
 	}
 
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		// empty. Take care of releasing the Camera preview in your activity.
+		Log.d(TAG, "surfaceDestroy");
+		//mCamera.destroy();
+		//mCamera = null;
 	}
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-		// If your preview can change or rotate, take care of those events here.
-		// Make sure to stop the preview before resizing or reformatting it.
-
-		if (mHolder.getSurface() == null){
+		Log.d(TAG, "surfaceCHANGED");
+		if (holder.getSurface() == null) {
+			Log.d(TAG, "surfaceCHANGED m null");
 			// preview surface does not exist
 			return;
 		}
 
 		// stop preview before making changes
-		try {
-			mCamera.stopPreview();
-		} catch (Exception e){
+		/*try {
+			
+			mCamera.getCamera().stopPreview();
+		} catch (Exception e) {
+			
 			// ignore: tried to stop a non-existent preview
+		}*/
+		
+		mCamera.destroy();
+		if (!mCamera.init(mContext)) {
+			Log.e("onCreateView", "mCamera init failed (no camera?)");
+			// TODO: Show a message to user and quit?
 		}
-
-		// set preview size and make any resize, rotate or
-		// reformatting changes here
-
-		// start preview with new settings
+		
+		
+		
+		Log.d(TAG, "mHolder = "+mHolder+" holder = "+holder);
+		mHolder = holder;
 		try {
-			mCamera.setPreviewDisplay(mHolder);
-			mCamera.startPreview();
-
-		} catch (Exception e){
+			mCamera.getCamera().getParameters().setPreviewSize(w, h);
+			mCamera.getCamera().getParameters().setPreviewFormat(format);
+			mCamera.getCamera().setPreviewDisplay(mHolder);
+			mCamera.getCamera().startPreview();
+		} catch (Exception e) {
 			Log.d(TAG, "Error starting camera preview: " + e.getMessage());
 		}
 	}
 
 	public void startPreview() {
+		getHolder().addCallback(this);
 		try {
-			mCamera.setPreviewDisplay(mHolder);
-			mCamera.startPreview();
+			mCamera.getCamera().setPreviewDisplay(mHolder);
+			Log.d(TAG, "mCamera=" + mCamera);
+			mCamera.getCamera().startPreview();
 		} catch (IOException e) {
 			Log.d(TAG, "Error setting camera preview: " + e.getMessage());
 		}
@@ -77,9 +91,19 @@ public class mySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
 	public void stopPreview() {
 		try {
-			mCamera.stopPreview();
-		} catch (Exception e){
+			mCamera.getCamera().stopPreview();
+		} catch (Exception e) {
 			// ignore: tried to stop a non-existent preview
 		}
+	}
+	
+	public void destroyPreview() {
+		Log.d(TAG, "DESTROY PREVIEW mCamera=" + mCamera);
+		mCamera.getCamera().setPreviewCallback(null);
+		mCamera.destroy();
+	}
+	
+	public void takePicture() {
+		mCamera.takePicture();
 	}
 }

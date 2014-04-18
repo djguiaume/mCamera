@@ -1,6 +1,5 @@
 package com.epitech.mcamera;
 
-import com.vaya.voicebox.R;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -22,7 +21,7 @@ public class UserSettingsActivity extends Activity {
 		super.onPause();
 	}
 
-	public static class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
+	/*public static class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
@@ -30,5 +29,5 @@ public class UserSettingsActivity extends Activity {
 			addPreferencesFromResource(R.xml.settings);
 		}
 
-    }
+    }*/
 }
