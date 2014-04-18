@@ -85,10 +85,7 @@ public class MainActivity extends Activity {
 
 			// Create our Preview view and set it as the content of our
 			// activity.
-			mPreview = new MySurfaceView(getActivity());
-			FrameLayout preview = (FrameLayout) rootView
-					.findViewById(R.id.camera_preview);
-			preview.addView(mPreview);
+			
 
 			Button photoButton = (Button) rootView
 					.findViewById(R.id.button_photo);
@@ -100,9 +97,6 @@ public class MainActivity extends Activity {
 					mPreview.takePicture();
 				}
 			});
-
-
-	
 
 			Button videoButton = (Button) rootView
 					.findViewById(R.id.button_video);
@@ -147,32 +141,11 @@ public class MainActivity extends Activity {
 
 		}
 
-		@Override
-		public void onDestroyView() {
-			super.onDestroyView();
-			if (mPreview != null) {
-				Log.d(TAG, "ONDESTROY VIEW");
-				mPreview.destroyPreview();
-				mPreview = null;
-				FrameLayout preview = (FrameLayout) rootView
-						.findViewById(R.id.camera_preview);
-				preview.removeView(mPreview);
-			}
-		}
+		
 
 		@Override
 		public void onDestroy() {
 			super.onDestroy();
-
-			if (mPreview != null) {
-				Log.d(TAG, "ONDESTROY");
-				mPreview.destroyPreview();
-				mPreview = null;
-				FrameLayout preview = (FrameLayout) rootView
-						.findViewById(R.id.camera_preview);
-				preview.removeView(mPreview);
-			}
-			// mCamera = null;
 		}
 
 		@Override
