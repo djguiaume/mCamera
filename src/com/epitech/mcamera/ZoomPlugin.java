@@ -45,6 +45,7 @@ public class ZoomPlugin implements plugin {
 		} else {
 			isSmoothZoomAvalaible = false;
 		}
+		Log.d(TAG, "chatte smooth zoom: " + isSmoothZoomAvalaible);
 
 		params = mPreview.getCamera().getParameters();
 		maxZoom = params.getMaxZoom();
@@ -57,7 +58,9 @@ public class ZoomPlugin implements plugin {
 		if (isSmoothZoomAvalaible) {
 			mPreview.getCamera().stopSmoothZoom();
 			mPreview.getCamera().startSmoothZoom(zoomTo);
+			Log.d(TAG, "smoothzoom");
 		} else {
+			Log.d(TAG, "Passmoothzoom");
 			params.setZoom(zoomTo);
 		}
 		mPreview.getCamera().setParameters(params);

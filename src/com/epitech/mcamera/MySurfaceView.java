@@ -180,7 +180,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	
 	public boolean hasFeature(String featureName) {
 		
-		Camera cam = mCamera.getCamera();
+		Camera cam = this.getCamera();
 		
 		if (cam != null) {
 			Camera.Parameters params = cam.getParameters();
@@ -188,7 +188,9 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 			if (featureName == ZOOM_FEATURE_NAME) {
 				return params.isZoomSupported();
 			}
-			
+			if (featureName == SMOOTHZOOM_FEATURE_NAME) {
+				return params.isSmoothZoomSupported();
+			}
 			List<String> focusModes = params.getSupportedFocusModes();
 			if (focusModes.contains(featureName)) {
 				return true;
