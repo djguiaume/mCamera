@@ -44,6 +44,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	public void surfaceCreated(SurfaceHolder holder) {
 		Log.w("surfaceCreated", "On Surface Created");
 		mHolder = holder;
+        startPreview();
         locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
@@ -71,7 +72,6 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
             Log.d(MySurfaceView.VTAG, "PASSIVE_PROVIDER");
         }
         else Log.d(MySurfaceView.VTAG, "No fuckin provider");
-        startPreview();
     }
 
 	@Override
