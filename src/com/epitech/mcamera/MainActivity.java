@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
 	 */
 	public static class PlaceholderFragment extends Fragment {
 
-		private mySurfaceView mPreview = null;
+		private MySurfaceView mPreview = null;
 		private View rootView;
 
 		public PlaceholderFragment() {
@@ -77,7 +77,7 @@ public class MainActivity extends Activity {
 
 			// Create our Preview view and set it as the content of our
 			// activity.
-			mPreview = new mySurfaceView(getActivity());
+			mPreview = new MySurfaceView(getActivity());
 			FrameLayout preview = (FrameLayout) rootView
 					.findViewById(R.id.camera_preview);
 			preview.addView(mPreview);
@@ -148,7 +148,7 @@ public class MainActivity extends Activity {
 				//mPreview.startPreview();
 				return;
 			}
-			mPreview = new mySurfaceView(getActivity());
+			mPreview = new MySurfaceView(getActivity());
 			FrameLayout preview = (FrameLayout) rootView
 					.findViewById(R.id.camera_preview);
 			preview.addView(mPreview);
