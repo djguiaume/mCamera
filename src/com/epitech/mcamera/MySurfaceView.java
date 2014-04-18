@@ -3,49 +3,63 @@ package com.epitech.mcamera;
 import java.io.IOException;
 import java.util.List;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.*;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.RelativeLayout;
 
 /** A basic Camera preview class */
 public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 	private static final String TAG = "SURFACE";
     public static final String VTAG = "VAYATAG";
-	private SurfaceHolder mHolder;
+    private SurfaceHolder mHolder;
 	private MCamera mCamera;
 	private Context mContext;
+    private RelativeLayout rootview;
 	public static String ZOOM_FEATURE_NAME = "ZOOM";
 	public static String SMOOTHZOOM_FEATURE_NAME = "SMOOTHZOOM";
     LocationManager locationManager;
     LocationListener locationListener;
 
-
-
-	public MySurfaceView(Context context) {
+	public MySurfaceView(Context context, RelativeLayout rl) {
 		super(context);
+        rootview = rl;
 		mContext = context;
+        getHolder().addCallback(this);
+		Log.d(TAG, "surfaceView Constructor");
 
 		getHolder().addCallback(this);
 		Log.d(TAG, "surfaceView Constructor"); 
+
 		mCamera = new MCamera();
-		if (!mCamera.init(context)) {
+		if (!mCamera.init(context, rl)) {
 			Log.e("onCreateView", "mCamera init failed (no camera?)");
 			// TODO: Show a message to user and quit?
 		}
+
+
 	}
-	
-	@Override
+
+
+	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    @Override
 	public void surfaceCreated(SurfaceHolder holder) {
 		Log.w("surfaceCreated", "On Surface Created");
 		mHolder = holder;
         startPreview();
+
         locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
@@ -73,7 +87,12 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
             Log.d(MySurfaceView.VTAG, "PASSIVE_PROVIDER");
         }
         else Log.d(MySurfaceView.VTAG, "No fuckin provider");
+
+
+
     }
+
+
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
@@ -103,7 +122,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		}*/
 		
 		mCamera.destroy();
-		if (!mCamera.init(mContext)) {
+		if (!mCamera.init(mContext, rootview)) {
 			Log.e("onCreateView", "mCamera init failed (no camera?)");
 			// TODO: Show a message to user and quit?
 		}
@@ -122,6 +141,11 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		} catch (Exception e) {
 			Log.d(TAG, "Error starting camera preview: " + e.getMessage());
 		}
+
+        RelativeLayout mmainLay = (RelativeLayout) findViewById(R.id.overlay);
+        if(mmainLay == null) {
+            Log.d(MySurfaceView.VTAG, "LAYOU FUCKIN NULL");
+        }
 	}
 
 	public void startPreview() {
@@ -177,7 +201,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		return false;
 	}
 
-	public void takeVideo() { 
+    public void takeVideo() {
 		if (mCamera.isRecording() == false)
 			mCamera.startVideoRecording(mHolder);
 		else

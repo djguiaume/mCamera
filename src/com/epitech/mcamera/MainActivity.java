@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -21,6 +22,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.hardware.Camera;
 import com.epitech.mcamera.ZoomPlugin;
 
@@ -50,7 +52,7 @@ public class MainActivity extends Activity {
 		prefs.registerOnSharedPreferenceChangeListener(listener);		
 	
 
-		if (savedInstanceState == null) {
+        if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
 		}
@@ -107,6 +109,7 @@ public class MainActivity extends Activity {
 					false);
 			Log.d(TAG, "ON CREATE VIEW");
 
+
 			// Create our Preview view and set it as the content of our
 			// activity.
 
@@ -131,11 +134,6 @@ public class MainActivity extends Activity {
 					mPreview.takeVideo();
 				}
 			});
-
-			
-		
-			
-			// mPreview.startPreview();
 			return rootView;
 		}
 
@@ -144,7 +142,8 @@ public class MainActivity extends Activity {
 			Log.d(TAG, "ON RESUME VIEW");
 			super.onResume();
 
-			mPreview = new MySurfaceView(getActivity());
+			mPreview = new MySurfaceView(getActivity(), (RelativeLayout) rootView.findViewById(R.id.relavmain));
+
 			FrameLayout preview = (FrameLayout) rootView
 					.findViewById(R.id.camera_preview);
 			preview.addView(mPreview);

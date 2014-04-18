@@ -2,13 +2,29 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:baselineAligned="false"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+        >
 
     <FrameLayout
         android:id="@+id/camera_preview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"/>
+
+    <RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent"
+                    android:id="@+id/relavmain"
+    >
+        <com.epitech.mcamera.OverlayView
+                android:id="@+id/overlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:layout_gravity="center">
+        </com.epitech.mcamera.OverlayView>
+    </RelativeLayout>
+
+
+
 
     <LinearLayout
         android:id="@+id/camera_button"
