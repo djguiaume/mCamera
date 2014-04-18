@@ -124,6 +124,8 @@ public class MainActivity extends Activity {
 						.findViewById(R.id.button_zoom_minus);
 				zoomMinus.setOnClickListener(new onZoomListerner());
 				zoomPlus.setOnClickListener(new onZoomListerner());
+				zoomMinus.setVisibility(View.VISIBLE);
+				zoomPlus.setVisibility(View.VISIBLE);
 			}
 		}
 
