@@ -1,6 +1,5 @@
 package com.epitech.mcamera;
 
-
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
@@ -59,14 +58,14 @@ public class MainActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	private void showUserSettings() {
 		startActivity(new Intent(MainActivity.this, UserSettingsActivity.class));
 	}
-	
-	 public void onConfigurationChanged(Configuration newConfig) {               
-		 super.onConfigurationChanged(newConfig);                                                                                         
-		 }
+
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+	}
 
 	/**
 	 * A placeholder fragment containing a simple view.
@@ -75,6 +74,7 @@ public class MainActivity extends Activity {
 
 		private MySurfaceView mPreview = null;
 		private View rootView;
+		private static String TAG = "PlaceholderFragment";
 
 		public PlaceholderFragment() {
 		}
@@ -84,7 +84,7 @@ public class MainActivity extends Activity {
 				Bundle savedInstanceState) {
 			rootView = inflater.inflate(R.layout.fragment_main, container,
 					false);
-			Log.d("toto", "ON CREATE VIEW");
+			Log.d(TAG, "ON CREATE VIEW");
 
 			// Create our Preview view and set it as the content of our
 			// activity.
@@ -121,7 +121,7 @@ public class MainActivity extends Activity {
 		public void onDestroyView() {
 			super.onDestroyView();
 			if (mPreview != null) {
-				Log.d("toto", "ONDESTROY VIEW");
+				Log.d(TAG, "ONDESTROY VIEW");
 				mPreview.destroyPreview();
 				mPreview = null;
 				FrameLayout preview = (FrameLayout) rootView
@@ -131,11 +131,11 @@ public class MainActivity extends Activity {
 		}
 
 		@Override
-		public void onDestroy() { 
+		public void onDestroy() {
 			super.onDestroy();
 
 			if (mPreview != null) {
-				Log.d("toto", "ONDESTROY");
+				Log.d(TAG, "ONDESTROY");
 				mPreview.destroyPreview();
 				mPreview = null;
 				FrameLayout preview = (FrameLayout) rootView
@@ -148,7 +148,7 @@ public class MainActivity extends Activity {
 		@Override
 		public void onPause() {
 			super.onPause();
-			Log.d("toto", "ONPAUSE");
+			Log.d(TAG, "ONPAUSE");
 			mPreview.destroyPreview();
 			mPreview = null;
 			FrameLayout preview = (FrameLayout) rootView
@@ -159,17 +159,17 @@ public class MainActivity extends Activity {
 
 		@Override
 		public void onResume() {
-			Log.d("toto", "ON RESUME VIEW");
+			Log.d(TAG, "ON RESUME VIEW");
 			super.onResume();
 			if (mPreview != null) {
-				//mPreview.startPreview();
+				// mPreview.startPreview();
 				return;
 			}
 			mPreview = new MySurfaceView(getActivity());
 			FrameLayout preview = (FrameLayout) rootView
 					.findViewById(R.id.camera_preview);
 			preview.addView(mPreview);
-			 mPreview.startPreview();
+			mPreview.startPreview();
 		}
 	}
 
