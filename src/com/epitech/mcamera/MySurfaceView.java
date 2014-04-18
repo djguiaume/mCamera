@@ -44,6 +44,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	public void surfaceCreated(SurfaceHolder holder) {
 		Log.w("surfaceCreated", "On Surface Created");
 		mHolder = holder;
+        startPreview();
         locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
@@ -71,7 +72,6 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
             Log.d(MySurfaceView.VTAG, "PASSIVE_PROVIDER");
         }
         else Log.d(MySurfaceView.VTAG, "No fuckin provider");
-        startPreview();
     }
 
 	@Override
@@ -152,7 +152,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	
 	public boolean hasFeature(String featureName) {
 		
-		Camera cam = MCamera.getCameraInstance();
+		Camera cam = mCamera.getCamera();
 		
 		if (cam != null) {
 			Camera.Parameters params = cam.getParameters();
@@ -165,6 +165,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 			if (focusModes.contains(featureName)) {
 				return true;
 			}
+		} else {
+			Log.e(TAG, "Try to call has feature: " +  featureName + " whan cam == null !!");
 		}
 		return false;
 	}

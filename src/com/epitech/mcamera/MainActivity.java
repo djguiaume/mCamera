@@ -85,10 +85,7 @@ public class MainActivity extends Activity {
 
 			// Create our Preview view and set it as the content of our
 			// activity.
-			mPreview = new MySurfaceView(getActivity());
-			FrameLayout preview = (FrameLayout) rootView
-					.findViewById(R.id.camera_preview);
-			preview.addView(mPreview);
+			
 
 			Button photoButton = (Button) rootView
 					.findViewById(R.id.button_photo);
@@ -100,11 +97,6 @@ public class MainActivity extends Activity {
 					mPreview.takePicture();
 				}
 			});
-
-
-			if (mPreview.hasFeature(MySurfaceView.ZOOM_FEATURE_NAME)) {
-				setFeatureControls(MySurfaceView.ZOOM_FEATURE_NAME, rootView);
-			}
 
 			Button videoButton = (Button) rootView
 					.findViewById(R.id.button_video);
@@ -127,14 +119,14 @@ public class MainActivity extends Activity {
 						.findViewById(R.id.button_zoom_plus);
 				Button zoomMinus = (Button) rootView
 						.findViewById(R.id.button_zoom_minus);
-				zoomMinus.setOnClickListener(new onZoomListerner());
-				zoomPlus.setOnClickListener(new onZoomListerner());
+				zoomMinus.setOnClickListener(new OnZoomButtonPushedListerner());
+				zoomPlus.setOnClickListener(new OnZoomButtonPushedListerner());
 				zoomMinus.setVisibility(View.VISIBLE);
 				zoomPlus.setVisibility(View.VISIBLE);
 			}
 		}
 
-		public class onZoomListerner implements OnClickListener {
+		public class OnZoomButtonPushedListerner implements OnClickListener {
 			@Override
 			public void onClick(View v) {
 				switch (v.getId()) {
@@ -146,63 +138,42 @@ public class MainActivity extends Activity {
 					break;
 				}
 			}
-
-		}
-
-		@Override
-		public void onDestroyView() {
-			super.onDestroyView();
-			if (mPreview != null) {
-				Log.d(TAG, "ONDESTROY VIEW");
-				mPreview.destroyPreview();
-				mPreview = null;
-				FrameLayout preview = (FrameLayout) rootView
-						.findViewById(R.id.camera_preview);
-				preview.removeView(mPreview);
-			}
-		}
-
-		@Override
-		public void onDestroy() {
-			super.onDestroy();
-
-			if (mPreview != null) {
-				Log.d(TAG, "ONDESTROY");
-				mPreview.destroyPreview();
-				mPreview = null;
-				FrameLayout preview = (FrameLayout) rootView
-						.findViewById(R.id.camera_preview);
-				preview.removeView(mPreview);
-			}
-			// mCamera = null;
-		}
-
-		@Override
-		public void onPause() {
-			super.onPause();
-			Log.d(TAG, "ONPAUSE");
-			mPreview.destroyPreview();
-			mPreview = null;
-			FrameLayout preview = (FrameLayout) rootView
-					.findViewById(R.id.camera_preview);
-			preview.removeView(mPreview);
-			// mCamera = null;
 		}
 
 		@Override
 		public void onResume() {
 			Log.d(TAG, "ON RESUME VIEW");
 			super.onResume();
-			if (mPreview != null) {
-				// mPreview.startPreview();
-				return;
-			}
+			
 			mPreview = new MySurfaceView(getActivity());
 			FrameLayout preview = (FrameLayout) rootView
 					.findViewById(R.id.camera_preview);
 			preview.addView(mPreview);
 			mPreview.startPreview();
+			
+			Log.v(TAG, "Checks feature");
+			if (mPreview.hasFeature(MySurfaceView.ZOOM_FEATURE_NAME)) {
+				Log.v(TAG, "On a la feature");
+				setFeatureControls(MySurfaceView.ZOOM_FEATURE_NAME, rootView);
+			} else {
+				Log.v(TAG, "On a pas la feature");
+				
+			}
 		}
+
+		@Override
+		public void onPause() {
+			super.onPause();
+			Log.d(TAG, "ONPAUSE");
+		
+			FrameLayout preview = (FrameLayout) rootView
+					.findViewById(R.id.camera_preview);
+			preview.removeView(mPreview);
+			mPreview.destroyPreview();
+			mPreview = null;
+		}
+
+	
 	}
 
 }
