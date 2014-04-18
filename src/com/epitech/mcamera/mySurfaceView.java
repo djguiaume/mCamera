@@ -5,6 +5,10 @@ import java.io.IOException;
 import android.content.Context;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -12,13 +16,19 @@ import android.view.SurfaceView;
 /** A basic Camera preview class */
 public class mySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 	private static final String TAG = "SURFACE";
+    public static final String VTAG = "VAYATAG";
 	private SurfaceHolder mHolder;
 	private MCamera mCamera;
 	private Context mContext;
+    LocationManager locationManager;
+    LocationListener locationListener;
 
-	public mySurfaceView(Context context) {
+
+    public mySurfaceView(Context context) {
 		super(context);
 		mContext = context;
+
+
 		getHolder().addCallback(this);
 		Log.d(TAG, "surfaceView Constructor"); 
 		mCamera = new MCamera();
@@ -31,12 +41,40 @@ public class mySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	public void surfaceCreated(SurfaceHolder holder) {
 		Log.w("surfaceCreated", "On Surface Created");
 		mHolder = holder;
-		startPreview();
-	}
+        locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                Log.d(mySurfaceView.VTAG, "new location");
+                mCamera.setLocation(location);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) { Log.d(mySurfaceView.VTAG, "Status Changed"); }
+
+            public void onProviderEnabled(String provider) { Log.d(mySurfaceView.VTAG, "Provider enable"); }
+
+            public void onProviderDisabled(String provider) { Log.d(mySurfaceView.VTAG, "Provider disable"); }
+        };
+        Log.d(mySurfaceView.VTAG, "Start find provider ");
+        if (locationManager.getAllProviders().contains(LocationManager.NETWORK_PROVIDER)) {
+            Log.d(mySurfaceView.VTAG, "NETWORK_PROVIDER");
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        }
+        else if (locationManager.getAllProviders().contains(LocationManager.GPS_PROVIDER)) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            Log.d(mySurfaceView.VTAG, "GPS_PROVIDER");
+        }
+        else if (locationManager.getAllProviders().contains(LocationManager.PASSIVE_PROVIDER)) {
+            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, locationListener);
+            Log.d(mySurfaceView.VTAG, "PASSIVE_PROVIDER");
+        }
+        else Log.d(mySurfaceView.VTAG, "No fuckin provider");
+        startPreview();
+    }
 
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		// empty. Take care of releasing the Camera preview in your activity.
 		Log.d(TAG, "surfaceDestroy");
+        locationManager.removeUpdates(locationListener);
 		//mCamera.destroy();
 		//mCamera = null;
 	}

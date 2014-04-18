@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.location.Location;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -20,10 +22,15 @@ import android.util.Log;
 public class MCamera {
 	private static String TAG = "mCamera";
 	private Camera mCamera = null;
+    private Location location = null;
 
 	public MCamera() {
 
 	}
+
+    public void setLocation(Location loc) {
+        location = loc;
+    }
 
 	public boolean init(Context context) {
 		Log.d(TAG, "init mPicture="+mPicture+"mCamera="+mCamera);
@@ -66,6 +73,36 @@ public class MCamera {
 			return false;
 	}
 
+    private void SetExifGPSData(File fn) {
+        if (location == null)
+                return;
+        ExifInterface exif;
+        double glat = location.getLatitude();
+        double glong = location.getLongitude();
+
+        Log.d(mySurfaceView.VTAG, "setting exif data lat : " + glat + " long : "  + glong);
+
+        int num1Lat = (int)Math.floor(glat);
+        int num2Lat = (int)Math.floor((glat - num1Lat) * 60);
+        double num3Lat = (glat - ((double)num1Lat+((double)num2Lat/60))) * 3600000;
+
+        int num1Lon = (int)Math.floor(glong);
+        int num2Lon = (int)Math.floor((glong - num1Lon) * 60);
+        double num3Lon = (glong - ((double)num1Lon+((double)num2Lon/60))) * 3600000;
+
+        try {
+            exif = new ExifInterface(fn.getAbsolutePath());
+            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, num1Lat+"/1,"+num2Lat+"/1,"+num3Lat+"/1000");
+            exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, num1Lon+"/1,"+num2Lon+"/1,"+num3Lon+"/1000");
+            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, (glat > 0) ? "N" : "S");
+            exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, (glong > 0) ? "E" : "W");
+            exif.saveAttributes();
+        } catch (IOException e){
+            Log.d(mySurfaceView.VTAG, "Error set exif");
+        }
+
+    }
+
 	private PictureCallback mPicture = new PictureCallback() {
 
 		@Override
@@ -84,6 +121,7 @@ public class MCamera {
 				Log.d(TAG, "data=" + data);
 				fos.write(data);
 				fos.close();
+                SetExifGPSData(pictureFile);
 			} catch (FileNotFoundException e) {
 				Log.d(TAG, "File not found: " + e.getMessage());
 			} catch (IOException e) {

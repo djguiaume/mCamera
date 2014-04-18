@@ -94,9 +94,7 @@ public class MainActivity extends Activity {
 					// mPreview.stopPreview();
 				}
 			});
-
 			// mPreview.startPreview();
-
 			return rootView;
 		}
 
