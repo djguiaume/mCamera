@@ -22,6 +22,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	private MCamera mCamera;
 	private Context mContext;
 	public static String ZOOM_FEATURE_NAME = "ZOOM";
+	public static String SMOOTHZOOM_FEATURE_NAME = "SMOOTHZOOM";
     LocationManager locationManager;
     LocationListener locationListener;
 
@@ -30,7 +31,6 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 	public MySurfaceView(Context context) {
 		super(context);
 		mContext = context;
-
 
 		getHolder().addCallback(this);
 		Log.d(TAG, "surfaceView Constructor"); 
@@ -179,5 +179,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 			mCamera.stoptVideoRecording();
 	}
 
-	
+	public Camera getCamera() {
+		return mCamera.getCamera();
+	}
 }
