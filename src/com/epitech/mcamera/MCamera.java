@@ -79,11 +79,27 @@ public class MCamera {
             Log.d(MySurfaceView.VTAG, "Main Layout is null impossible to draw face");
         }
 
-        mCamera.setFaceDetectionListener(new InYourFaceListen(this.mContext, ly));
-        mCamera.startFaceDetection();
-        Log.d(MySurfaceView.VTAG, "Face Detection started");
+        if (prefs.getBoolean("face_switch", false)) {
+            Log.d(MySurfaceView.VTAG, "FACE DETECT Enable");
+            mCamera.stopFaceDetection();
+            mCamera.setFaceDetectionListener(new InYourFaceListen(this.mContext, ly));
+            try {
+                mCamera.startFaceDetection();
+            } catch (IllegalArgumentException i) {
+                Log.d(MySurfaceView.VTAG, "FACE DETECT Probably no supported");
+            }
+            if (mCamera.getParameters().getMaxNumDetectedFaces() <= 0) {
+                Log.d(MySurfaceView.VTAG, "YEP FACE DETECT NOT SUPPORTED ON YOUR DEVICE");
+                mCamera.stopFaceDetection();
+                SharedPreferences.Editor edd = prefs.edit();
+                edd.remove("face_switch");
+                edd.apply();
+            }
+        } else {
+            Log.d(MySurfaceView.VTAG, "FACE DETECT disable in settings");
+        }
 
-		if (mCamera == null)
+        if (mCamera == null)
 			return false;
 		setTorcheLight();
 		return true;
@@ -92,14 +108,10 @@ public class MCamera {
 	public void destroy() {
 		Log.d(TAG, "destroy called.");
 
-        mCamera.stopFaceDetection();
-        mCamera.setFaceDetectionListener(null);
-        Log.d(MySurfaceView.VTAG, "Face detection stopped");
-
 		stopVideoRecording(); 
 		mCamera.stopPreview();
 		mCamera.release();
-		mCamera = null;
+        mCamera = null;
 	}
 
 	private void releaseMediaRecorder() {

@@ -16,7 +16,10 @@ public class InYourFaceListen implements Camera.FaceDetectionListener {
     public InYourFaceListen(Context context, RelativeLayout relativeLayout) {
        ctx = context;
        ly = relativeLayout;
-        Log.d(MySurfaceView.VTAG, "Face Listener created");
+       Log.d(MySurfaceView.VTAG, "Face Listener created");
+        if (ly == null) {
+            Log.d(MySurfaceView.VTAG, "Face Listener got a null layout");
+        }
     }
 
     @Override

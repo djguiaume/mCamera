@@ -99,7 +99,7 @@ public class MainActivity extends Activity {
 					false);
 			Log.d(TAG, "ON CREATE VIEW");
 
-			Button photoButton = (Button) rootView
+            Button photoButton = (Button) rootView
 					.findViewById(R.id.button_photo);
 			photoButton.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -189,6 +189,5 @@ public class MainActivity extends Activity {
 		// get latest settings from the xml config file
 		SharedPreferences sharedPref = PreferenceManager
 				.getDefaultSharedPreferences(this);
-
 	}
 }

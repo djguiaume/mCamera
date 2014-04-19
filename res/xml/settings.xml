@@ -28,7 +28,7 @@
             android:key="flash_switch"
             android:title="Flash" />
         <SwitchPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="face_switch"
             android:title="Face detection" />
     </PreferenceCategory>

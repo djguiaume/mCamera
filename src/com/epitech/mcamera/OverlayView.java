@@ -58,6 +58,7 @@ public class OverlayView extends View  {
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(3);
         Log.d(MySurfaceView.VTAG, "onDraw : Draw overlay");
+        //canvas.drawRect(1,1,40,40, mPaint);
         if (faces != null) {
             for (Camera.Face face : faces) {
                 Log.d(MySurfaceView.VTAG, face.toString());

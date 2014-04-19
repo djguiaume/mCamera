@@ -41,8 +41,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		Log.d(TAG, "surfaceView Constructor");
 
 		getHolder().addCallback(this);
-		Log.d(TAG, "surfaceView Constructor"); 
-
+		Log.d(TAG, "surfaceView Constructor");
 		mCamera = new MCamera();
 		if (!mCamera.init(context, rl)) {
 			Log.e("onCreateView", "mCamera init failed (no camera?)");
@@ -111,7 +110,6 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 			Log.e("onCreateView", "mCamera init failed (no camera?)");
 			// TODO: Show a message to user and quit?
 		}
-
 		Log.d(TAG, "mHolder = "+mHolder+" holder = "+holder);
 		mHolder = holder;
 		try {
@@ -122,6 +120,10 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		} catch (Exception e) {
 			Log.d(TAG, "Error starting camera preview: " + e.getMessage());
 		}
+
+        RelativeLayout rl = (RelativeLayout) findViewById(R.id.relavmain);
+        if (rl != null)
+            Log.d(MySurfaceView.VTAG, "Can get main layout in surfaceview");
 	}
 
 	public void startPreview() {
@@ -152,7 +154,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		
 		if (cam != null) {
 			Camera.Parameters params = cam.getParameters();
-			
+
 			if (featureName == ZOOM_FEATURE_NAME) {
 				return params.isZoomSupported();
 			}
