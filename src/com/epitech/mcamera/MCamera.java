@@ -74,12 +74,14 @@ public class MCamera {
 			return false;
 		mCamera = getCameraInstance();
 
-			/*
-			 * checking for the rotation and adjusting the view accordingly
-			 */
+
+        if (ly == null) {
+            Log.d(MySurfaceView.VTAG, "Main Layout is null impossible to draw face");
+        }
 
         mCamera.setFaceDetectionListener(new InYourFaceListen(this.mContext, ly));
         mCamera.startFaceDetection();
+        Log.d(MySurfaceView.VTAG, "Face Detection started");
 
 		if (mCamera == null)
 			return false;
@@ -89,6 +91,11 @@ public class MCamera {
 
 	public void destroy() {
 		Log.d(TAG, "destroy called.");
+
+        mCamera.stopFaceDetection();
+        mCamera.setFaceDetectionListener(null);
+        Log.d(MySurfaceView.VTAG, "Face detection stopped");
+
 		stopVideoRecording(); 
 		mCamera.stopPreview();
 		mCamera.release();
@@ -310,8 +317,6 @@ public class MCamera {
 	}
 
 	private boolean prepareVideoRecorder(SurfaceHolder holder) {
-
-		// mCamera = getCameraInstance();
 		Log.d("VIDEO", "mCamera =" + mCamera);
 		if (mCamera == null)
 			return false;

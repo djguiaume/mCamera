@@ -13,19 +13,18 @@ public class InYourFaceListen implements Camera.FaceDetectionListener {
     MCamera cam;
     RelativeLayout ly;
 
-    public InYourFaceListen(RelativeLayout relativeLayout) {
-        ly = relativeLayout;
-    }
-
     public InYourFaceListen(Context context, RelativeLayout relativeLayout) {
        ctx = context;
        ly = relativeLayout;
+        Log.d(MySurfaceView.VTAG, "Face Listener created");
     }
 
     @Override
     public void onFaceDetection(Camera.Face[] faces, Camera camera) {
         ly.removeAllViews();
+        Log.d(MySurfaceView.VTAG, "onFaceDetection called");
         if (faces.length > 0) {
+            Log.d(MySurfaceView.VTAG, "detect at least one face");
             OverlayView ov = new OverlayView(ctx, faces, 1920, 1080);
             ov.setFaces(faces);
             ly.addView(ov);

@@ -88,19 +88,14 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
         }
         else Log.d(MySurfaceView.VTAG, "No fuckin provider");
 
-
-
     }
 
 
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		// empty. Take care of releasing the Camera preview in your activity.
 		Log.d(TAG, "surfaceDestroy");
         locationManager.removeUpdates(locationListener);
-		//mCamera.destroy();
-		//mCamera = null;
 	}
 
 	@Override
@@ -108,32 +103,18 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		Log.d(TAG, "surfaceCHANGED");
 		if (holder.getSurface() == null) {
 			Log.d(TAG, "surfaceCHANGED m null");
-			// preview surface does not exist
 			return;
 		}
-
-		// stop preview before making changes
-		/*try {
-			
-			mCamera.getCamera().stopPreview();
-		} catch (Exception e) {
-			
-			// ignore: tried to stop a non-existent preview
-		}*/
 		
 		mCamera.destroy();
 		if (!mCamera.init(mContext, rootview)) {
 			Log.e("onCreateView", "mCamera init failed (no camera?)");
 			// TODO: Show a message to user and quit?
 		}
-		
-		
-		
+
 		Log.d(TAG, "mHolder = "+mHolder+" holder = "+holder);
 		mHolder = holder;
 		try {
-			
-			
 			mCamera.getCamera().getParameters().setPreviewSize(w, h);
 			mCamera.getCamera().getParameters().setPreviewFormat(format);
 			mCamera.getCamera().setPreviewDisplay(mHolder);
@@ -141,11 +122,6 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 		} catch (Exception e) {
 			Log.d(TAG, "Error starting camera preview: " + e.getMessage());
 		}
-
-        RelativeLayout mmainLay = (RelativeLayout) findViewById(R.id.overlay);
-        if(mmainLay == null) {
-            Log.d(MySurfaceView.VTAG, "LAYOU FUCKIN NULL");
-        }
 	}
 
 	public void startPreview() {
@@ -156,14 +132,6 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
 			mCamera.getCamera().startPreview();
 		} catch (IOException e) {
 			Log.d(TAG, "Error setting camera preview: " + e.getMessage());
-		}
-	}
-
-	public void stopPreview() {
-		try {
-			mCamera.getCamera().stopPreview();
-		} catch (Exception e) {
-			// ignore: tried to stop a non-existent preview
 		}
 	}
 	
