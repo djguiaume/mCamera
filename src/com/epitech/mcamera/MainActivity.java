@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -17,13 +16,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 
 import com.epitech.mcamera.ZoomPlugin;
@@ -84,6 +82,7 @@ public class MainActivity extends Activity {
 	 */
 	public static class PlaceholderFragment extends Fragment {
 		private MySurfaceView mPreview = null;
+		private boolean mIsRecording = false;
 		private View rootView;
 		private static String TAG = "PlaceholderFragment";
 
@@ -99,7 +98,7 @@ public class MainActivity extends Activity {
 					false);
 			Log.d(TAG, "ON CREATE VIEW");
 
-            Button photoButton = (Button) rootView
+			Button photoButton = (Button) rootView
 					.findViewById(R.id.button_photo);
 			photoButton.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -110,19 +109,32 @@ public class MainActivity extends Activity {
 				}
 			});
 
-			Button videoButton = (Button) rootView
+			ImageButton videoButton = (ImageButton) rootView
 					.findViewById(R.id.button_video);
 			videoButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					// get an image from the camera
 					Log.d(ACCOUNT_SERVICE, "onClick VIDEO");
 					mPreview.takeVideo();
+
+					ImageButton vButton = (ImageButton) v;
+					Button pButton = (Button) rootView
+							.findViewById(R.id.button_photo);
+					// too slow to get updated
+					//mIsRecording = mPreview.isRecording();
+					mIsRecording = !mIsRecording; //TODO: get real recording state?
+					if (mIsRecording) {
+						vButton.setImageResource(R.drawable.record_stop);
+						pButton.setEnabled(false);
+					}
+					else {
+						vButton.setImageResource(R.drawable.record_record);
+						pButton.setEnabled(true);
+					}
 				}
 			});
-			
-			Button aeButton = (Button) rootView
-					.findViewById(R.id.button_ae);
+
+			Button aeButton = (Button) rootView.findViewById(R.id.button_ae);
 			aeButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {

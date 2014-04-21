@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -19,7 +18,6 @@ import android.hardware.Camera.PictureCallback;
 import android.location.Location;
 import android.media.ExifInterface;
 import android.media.CamcorderProfile;
-import android.media.FaceDetector;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -28,9 +26,7 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.Files.FileColumns;
 import android.provider.MediaStore.Images;
 import android.util.Log;
-import android.view.Display;
 import android.view.SurfaceHolder;
-import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 public class MCamera {
@@ -41,7 +37,7 @@ public class MCamera {
 	private MediaRecorder mMediaRecorder;
 	private boolean mIsRecording = false;
 	private Context mContext = null;
-    public InYourFaceListen faces;
+	public InYourFaceListen faces;
 	private OnSharedPreferenceChangeListener listener = null;
 	private SharedPreferences prefs = null;
 
@@ -53,18 +49,18 @@ public class MCamera {
 		location = loc;
 	}
 
-
 	public boolean init(Context context, RelativeLayout ly) {
 		mContext = context;
 
-			mContext = context;
-			prefs = PreferenceManager.getDefaultSharedPreferences(context);
-			listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-				public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-					UpdatePref(mContext);
-				}
-			};
-			prefs.registerOnSharedPreferenceChangeListener(listener);
+		mContext = context;
+		prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+			public void onSharedPreferenceChanged(SharedPreferences prefs,
+					String key) {
+				UpdatePref(mContext);
+			}
+		};
+		prefs.registerOnSharedPreferenceChangeListener(listener);
 
 		if (mCamera != null) {
 			Log.d(TAG, "already init.");
@@ -74,32 +70,34 @@ public class MCamera {
 			return false;
 		mCamera = getCameraInstance();
 
+		if (ly == null) {
+			Log.d(MySurfaceView.VTAG,
+					"Main Layout is null impossible to draw face");
+		}
 
-        if (ly == null) {
-            Log.d(MySurfaceView.VTAG, "Main Layout is null impossible to draw face");
-        }
+		if (prefs.getBoolean("face_switch", false)) {
+			Log.d(MySurfaceView.VTAG, "FACE DETECT Enable");
+			mCamera.stopFaceDetection();
+			mCamera.setFaceDetectionListener(new InYourFaceListen(
+					this.mContext, ly));
+			try {
+				mCamera.startFaceDetection();
+			} catch (IllegalArgumentException i) {
+				Log.d(MySurfaceView.VTAG, "FACE DETECT Probably no supported");
+			}
+			if (mCamera.getParameters().getMaxNumDetectedFaces() <= 0) {
+				Log.d(MySurfaceView.VTAG,
+						"YEP FACE DETECT NOT SUPPORTED ON YOUR DEVICE");
+				mCamera.stopFaceDetection();
+				SharedPreferences.Editor edd = prefs.edit();
+				edd.remove("face_switch");
+				edd.apply();
+			}
+		} else {
+			Log.d(MySurfaceView.VTAG, "FACE DETECT disable in settings");
+		}
 
-        if (prefs.getBoolean("face_switch", false)) {
-            Log.d(MySurfaceView.VTAG, "FACE DETECT Enable");
-            mCamera.stopFaceDetection();
-            mCamera.setFaceDetectionListener(new InYourFaceListen(this.mContext, ly));
-            try {
-                mCamera.startFaceDetection();
-            } catch (IllegalArgumentException i) {
-                Log.d(MySurfaceView.VTAG, "FACE DETECT Probably no supported");
-            }
-            if (mCamera.getParameters().getMaxNumDetectedFaces() <= 0) {
-                Log.d(MySurfaceView.VTAG, "YEP FACE DETECT NOT SUPPORTED ON YOUR DEVICE");
-                mCamera.stopFaceDetection();
-                SharedPreferences.Editor edd = prefs.edit();
-                edd.remove("face_switch");
-                edd.apply();
-            }
-        } else {
-            Log.d(MySurfaceView.VTAG, "FACE DETECT disable in settings");
-        }
-
-        if (mCamera == null)
+		if (mCamera == null)
 			return false;
 		setTorcheLight();
 		return true;
@@ -108,10 +106,10 @@ public class MCamera {
 	public void destroy() {
 		Log.d(TAG, "destroy called.");
 
-		stopVideoRecording(); 
+		stopVideoRecording();
 		mCamera.stopPreview();
 		mCamera.release();
-        mCamera = null;
+		mCamera = null;
 	}
 
 	private void releaseMediaRecorder() {
@@ -137,7 +135,7 @@ public class MCamera {
 		double glong = location.getLongitude();
 
 		Log.d(MySurfaceView.VTAG, "setting exif data lat : " + glat
-                + " long : " + glong);
+				+ " long : " + glong);
 
 		int num1Lat = (int) Math.floor(glat);
 		int num2Lat = (int) Math.floor((glat - num1Lat) * 60);
@@ -281,8 +279,7 @@ public class MCamera {
 		}
 	};
 
-    private class TakePictureTask extends AsyncTask<Void, Void, Void> {
-
+	private class TakePictureTask extends AsyncTask<Void, Void, Void> {
 
 		@Override
 		protected void onPostExecute(Void result) {
@@ -399,26 +396,24 @@ public class MCamera {
 		return mIsRecording;
 	}
 
-	public void setTorcheLight(){
-		if (mCamera != null){
+	public void setTorcheLight() {
+		if (mCamera != null) {
 			Parameters p = mCamera.getParameters();
-			if (prefs.getBoolean("flash_switch", true)){
+			if (prefs.getBoolean("flash_switch", true)) {
 				p.setFlashMode(Parameters.FLASH_MODE_ON);
 				mCamera.setParameters(p);
-			}
-			else{ 
+			} else {
 				p.setFlashMode(Parameters.FLASH_MODE_OFF);
 				mCamera.setParameters(p);
 			}
-		}
-		else
-		Log.d(TAG, "mCamera pas la ");
+		} else
+			Log.d(TAG, "mCamera pas la ");
 	}
-	
+
 	public void UpdatePref(Context context) {
-		//get latest settings from the xml config file
-		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-		
-		
+		// get latest settings from the xml config file
+		SharedPreferences sharedPref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+
 	}
 }

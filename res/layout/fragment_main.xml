@@ -58,13 +58,15 @@
             android:layout_gravity="center"
             android:text="photo" />
 
-        <Button
+        <ImageButton
             android:id="@+id/button_video"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_gravity="center"
-            android:text="video" />
-        
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/record_record" />
+
         <Button
             android:id="@+id/button_ae"
             android:layout_width="wrap_content"
